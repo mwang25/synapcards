@@ -1,0 +1,14 @@
+indexes:
+
+- kind: Card
+  properties:
+  - name: rating
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: tags
+  - name: last_update_datetime
+    direction: desc

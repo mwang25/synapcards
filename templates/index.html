@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!-- saved from url=(0097)https://storage.googleapis.com/supplemental_media/udacityu/2730818600/bootstrap-prestructure.html -->
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-5185816411158540",
+        enable_page_level_ads: true
+      });
+    </script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-102608232-1', 'auto');
+  ga('send', 'pageview');
+    </script>
+    <title>SynapCards</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:thin,regular,bold" rel="stylesheet">
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="static/style.css">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <img src="static/colorful-network-synapcards.jpg" class="img-responsive" alt="synapcards logo">
+        </div>
+      </div>
+      <div class="row row-outer menu-bar">
+        <div class="col-xs-3 text-left">
+          Home
+        </div>
+        <div class="col-xs-3 text-center">
+          <a href="static/about.html">About</a>
+        </div>
+        <div class="col-xs-3 text-center">
+          TODO: search
+        </div>
+        <div class="col-xs-3 text-right">
+          TODO: sign-in
+        </div>
+      </div>
+      <div class="row row-outer">
+        <div class="col-xs-12">
+          <h2>What is SynapCards?</h2>
+          <p>
+            Synapcards is a personal information storage, retrieval, and
+            sharing system.  It uses two familiar things from the physical world:
+            neural synapses and index cards.  You can read more in the
+            <a href=static/about.html>about</a> page.
+          </p>
+          <p>
+            This website is in a very preliminary state.  Eventually you will
+            be able to add your own cards to your own account, search them,
+            and share them with whomever you want.  For now, I will show the
+            most recently added top-rated cards on this page, and some
+            featured cards on my profile page.
+          </p>
+        </div>
+      </div>
+      <div class="row row-outer">
+        <div class="col-xs-12">
+          <h2>Users</h2>
+          <b>Total Users:</b> {{ total_users }}<br>
+          <a href="{{ homepage }}/user/mwang25">mwang25</a><br>
+        </div>
+      </div>
+      <div class="row row-outer">
+        <div class="col-xs-12">
+          <h2>Cards</h2>
+          <b>Total Cards:</b> {{ total_cards }}<br>
+        </div>
+      </div>
+      <div class="row row-outer">
+        <div class="col-xs-12">
+          <h2>Recently Added Top Rated Cards:</h2>
+        </div>
+      </div>
+      <div class="row row-outer">
+      <div class="col-xs-12 col-md-5 card">
+          <div class="row">
+            <div class="col-xs-6 text-left">
+              <b>Card:</b><a href="card/{{ card_id1 }}">{{ card_id1 }}</a>
+            </div>
+            <div class="col-xs-6 text-right">
+              <b>TODO:</b> icons, menu
+            </div>
+          </div>
+          <h3><a href="{{ title_url1 }}">{{ title1 }}</a></h3>
+          <p>{{ summary1 }}</p>
+          <p>
+            <b>Author:</b> {{ author1 }}<br>
+            <b>Source:</b> {{ source1 }}<br>
+            <b>Published:</b> {{ published1 }}<br>
+            <b>Tags:</b> {{ tags1 }}<br>
+            <b>Rating:</b> {{ rating1 }}/{{ max_rating1}}
+          </p>
+          <p>{{ detailed_notes1 }}</p>
+        </div>
+        <div class="col-xs-12 col-md-5 card">
+          <div class="row">
+            <div class="col-xs-6 text-left">
+              <b>Card:</b><a href="card/{{ card_id2 }}">{{ card_id2 }}</a>
+            </div>
+            <div class="col-xs-6 text-right">
+              <b>TODO:</b> icons, menu
+            </div>
+          </div>
+          <h3><a href="{{ title_url2 }}">{{ title2 }}</a></h3>
+          <p>{{ summary2 }}</p>
+          <p>
+            <b>Author:</b> {{ author2 }}<br>
+            <b>Source:</b> {{ source2 }}<br>
+            <b>Published:</b> {{ published2 }}<br>
+            <b>Tags:</b> {{ tags2 }}<br>
+            <b>Rating:</b> {{ rating2 }}/{{ max_rating2 }}
+          </p>
+          <p>{{ detailed_notes2 }}</p>
+        </div>
+      </div>
+      <div class="row row-outer">
+        <div class="col-xs-12 col-md-5 card">
+          <div class="row">
+            <div class="col-xs-6 text-left">
+              <b>Card:</b><a href="card/{{ card_id3 }}">{{ card_id3 }}</a>
+            </div>
+            <div class="col-xs-6 text-right">
+              <b>TODO:</b> icons, menu
+            </div>
+          </div>
+          <h3><a href="{{ title_url3 }}">{{ title3 }}</a></h3>
+          <p>{{ summary3 }}</p>
+          <p>
+            <b>Author:</b> {{ author3 }}<br>
+            <b>Source:</b> {{ source3 }}<br>
+            <b>Published:</b> {{ published3 }}<br>
+            <b>Tags:</b> {{ tags3 }}<br>
+            <b>Rating:</b> {{ rating3 }}/{{ max_rating3 }}
+          </p>
+          <p>{{ detailed_notes3 }}</p>
+        </div>
+        <div class="col-xs-12 col-md-5 card">
+          <div class="row">
+            <div class="col-xs-6 text-left">
+              <b>Card:</b><a href="card/{{ card_id4 }}">{{ card_id4 }}</a>
+            </div>
+            <div class="col-xs-6 text-right">
+              <b>TODO:</b> icons, menu
+            </div>
+          </div>
+          <h3><a href="{{ title_url4 }}">{{ title4 }}</a></h3>
+          <p>{{ summary4 }}</p>
+          <p>
+            <b>Author:</b> {{ author4 }}<br>
+            <b>Source:</b> {{ source4 }}<br>
+            <b>Published:</b> {{ published4 }}<br>
+            <b>Tags:</b> {{ tags4 }}<br>
+            <b>Rating:</b> {{ rating4 }}/{{ max_rating4 }}
+          </p>
+          <p>{{ detailed_notes4 }}</p>
+        </div>
+      </div>
+      <div class="row row-outer">
+        <div class="col-xs-12">
+          <b>Total views across entire site:</b> {{ total_views }}<br>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+/*
+ * bootstrap defaults to small size.  I override font sizes for
+ * screens >= 992px.
+ */
+
+h1 {font-size: 7vw;}
+h2 {font-size: 6vw;}
+h3 {font-size: 5vw;}
+
+body {
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
+  font-size: 4vw;
+  background-color: #d0cece;
+}
+
+.menu-bar {
+  background-color: #d0cece;
+}
+
+.container-fluid {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.row-outer {
+  margin-right: 15px;
+}
+
+.card {
+  background-color: white;
+  margin-left: 15px;
+  padding-left: 2px;
+  margin-bottom: 15px;
+  height: 40vh;
+  overflow-y: scroll;
+}
+
+
+@media (min-width: 992px) {
+  h1 {font-size: 36px;}
+  h2 {font-size: 28px;}
+  h3 {font-size: 24px;}
+  body {font-size: 16px;}
+}
+
+.text-colorful {
+  color: #16da19;
+}
+
+.text-thin {
+  font-weight: 100;
+}
+
+.text-bold {
+  font-weight: 800;
+}
+
+.text-huge {
+  font-size: 60px;
+}

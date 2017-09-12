@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!-- saved from url=(0097)https://storage.googleapis.com/supplemental_media/udacityu/2730818600/bootstrap-prestructure.html -->
+<html>
+  <head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-102608232-1', 'auto');
+  ga('send', 'pageview');
+    </script>
+    <title>SynapCards</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:thin,regular,bold" rel="stylesheet">
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <img src="colorful-network-synapcards.jpg" class="img-responsive" alt="synapcards logo">
+        </div>
+      </div>
+      <div class="row menu-bar">
+        <div class="col-xs-3 text-left">
+          <a href="../index.html">Home</a>
+        </div>
+        <div class="col-xs-3 text-center">
+          <a href="about.html">About</a>
+        </div>
+        <div class="col-xs-3 text-center">
+          TODO: search
+        </div>
+        <div class="col-xs-3 text-right">
+          TODO: sign-in
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>Design Notes</h2>
+          <h3>Sections</h3>
+          <p>
+            Optional featured cards, latest cards added, pinned cards which are
+            for the author for his own personal favorite cards.
+          </p>
+          <h3>Cards</h3>
+          <ol>
+            <li>
+              Top row of all cards should have card id on the left, and icons
+              in the middle, and a drop down menu on the right.  Card is is a
+              hyperlink to the card itself.
+            </li>
+            <li>
+              Heart icon for likes.  Red color is like by
+              the author/owner of the card, pink color is like by other people but
+              not the author.  Below the icon is the total number of likes.
+            </li>
+            <li>
+              Eye icon for number of views.
+            </li>
+            <li>
+              If this card is not owned by the viewer, then a bell icon (or
+              telescope) for getting notified of updates to this card.
+            </li>
+          </ol>
+          <p>
+            Cards can be private, public, or view permissions granted to
+            specific users.  Should we ever allow other people to write to
+            someone else's card?  Seems hard to deal with.  They could just
+            create a shared account.
+          </p>
+          <h3>Card Drop down menu</h3>
+          <ol>
+            <li>If this card is owned by the viewer, then edit option.</li>
+            <li>
+              If this card is owned by the viewer, then sharing option.
+              Sharing allows the owner to make the card private, share with
+              other synapcard users, or make the card public.
+            </li>
+            <li>If this card is owned by the viewer, then archive option.</li>
+            <li>If this card is owned by the viewer, then delete option.</li>
+            <li>
+              If this card is not owned by the viwer, then copy option.
+              Copy will create a new card owned by the current viewer.  Once
+              the copy is made, the copy is independent of the original and
+              can diverge from the original card.
+            </li>
+            <li>
+              Everyone will have a meta info option, which shows meta info about
+              the card, such as creation date, last update date, etc.
+            </li>
+          </ol>
+          <h3>Login</h3>
+          <p>
+            Support for users logging into their own accounts using
+            oath/google identification.  Login information is needed to
+            implement secure email updates, sharing, and support for multiple
+            users.
+          </p>
+          <p>
+            Each user can optionally create a profile page for him/herself.
+            Profile page can also show stats about the account, e.g. how many
+            cards the user has created, how
+            many added last week, total views, total likes, when the user joined
+            synapcards, etc.
+          </p>
+          <h3>Privacy</h3>
+          <p>
+            Every card, section, page will have privacy control.  They can be
+            set to private, shared with specific synapcard users, or public.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
