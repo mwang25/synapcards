@@ -56,9 +56,11 @@
               Heart icon for likes.  Red color is like by
               the author/owner of the card, pink color is like by other people but
               not the author.  Below the icon is the total number of likes.
+              Or maybe the heart is red if there is any likes and the counter
+              says liked by you and x others.
             </li>
             <li>
-              Eye icon for number of views.
+              Eye icon for number of views.  Too fine grained?
             </li>
             <li>
               If this card is not owned by the viewer, then a bell icon (or
@@ -79,7 +81,6 @@
               Sharing allows the owner to make the card private, share with
               other synapcard users, or make the card public.
             </li>
-            <li>If this card is owned by the viewer, then archive option.</li>
             <li>If this card is owned by the viewer, then delete option.</li>
             <li>
               If this card is not owned by the viwer, then copy option.
@@ -103,13 +104,32 @@
             Each user can optionally create a profile page for him/herself.
             Profile page can also show stats about the account, e.g. how many
             cards the user has created, how
-            many added last week, total views, total likes, when the user joined
-            synapcards, etc.
+            many added last month, distribution of tags,
+            total views(?), total likes(?),
+            when the user joined synapcards, etc.  Need at least one setting:
+            timezone the user lives in.
           </p>
           <h3>Privacy</h3>
           <p>
             Every card, section, page will have privacy control.  They can be
             set to private, shared with specific synapcard users, or public.
+          </p>
+          <h3>Releases</h3>
+          <p>
+            <b>First release (7/21/17)</b>: static site.  DNS handled by GoDaddy,
+            but redirected to Google storage buckets.  Static pages in the
+            storage buckets.  Made a logo.  Google analytics tag in all pages.
+            Google ad tag in all pages, but Google rejected my site because it
+            was not finished yet.
+          </p>
+          <p>
+            <b>Second release (9/21/17)</b>: Dynamic site.  DNS transfered
+              Google.  Bought SSL cert from SSLMate, so my site can be accessed
+              via https.  Site served by Google AppEngine running python
+              webapp2 and Jinja templates. Cards stored and served from
+              DataStore, a noSQL database.  Simple user profile page.  Very
+              hacky featured cards page with ability to see previous featured
+              cards.
           </p>
         </div>
       </div>
