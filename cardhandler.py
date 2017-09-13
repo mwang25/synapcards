@@ -3,6 +3,7 @@ import webapp2
 
 from card import Card
 from constants import Constants
+from globalstats import GlobalStats
 from jinjawrapper import JinjaWrapper
 
 
@@ -10,6 +11,7 @@ class CardHandler(webapp2.RequestHandler):
     def get(self, card_id):
         values = Card.by_id(card_id)
         if values['card_id1'] == card_id:
+            GlobalStats.incr_views()
             template = JinjaWrapper.get_template('card.html')
             self.response.write(template.render(values))
         else:
