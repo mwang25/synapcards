@@ -1,3 +1,3 @@
 class Constants():
-    HOMEPAGE = 'https://synapcards-178123.appspot.com'
+    HOMEPAGE = 'https://synapcards.com'
     FEATURED_CARDS = 'featured cards'
