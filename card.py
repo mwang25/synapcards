@@ -1,5 +1,7 @@
-from google.appengine.ext import ndb
+import cgi
 
+from google.appengine.ext import ndb
+from jinja2 import Markup
 from constants import Constants
 
 
@@ -22,12 +24,12 @@ class Card(ndb.Model):
     last_update_datetime = ndb.DateTimeProperty()
 
     @classmethod
-    def by_id(cls, card_id):
+    def by_id(cls, card_id, truncate):
         k = ndb.Key(cls.KIND, card_id)
         result = k.get()
         if result is None:
             return {'card_id1': None}
-        return cls._fill_values([result])
+        return cls._fill_values([result], truncate)
 
     @classmethod
     def latest_top_rated(cls):
@@ -89,7 +91,32 @@ class Card(ndb.Model):
         return values
 
     @classmethod
-    def _fill_values(cls, results):
+    def _truncate_string(cls, s1, s2, max_len):
+        """ Return a truncated s2 where s1 + s2 <= max_len words. """
+        s1_len = len(s1.split(' '))
+        s2_len = len(s2.split(' '))
+        MIN_S2_LEN = 6
+        if s1_len + s2_len <= max_len or s2_len < MIN_S2_LEN:
+            return s2, False
+
+        truncate_point = MIN_S2_LEN if s1_len > max_len else max_len - s1_len
+
+        return ' '.join(s2.split(' ')[0:truncate_point]), True
+
+    @classmethod
+    def _format_detailed_notes(cls, s1, s2, card_id, truncate):
+        if not truncate:
+            return s2
+
+        (notes, trunc) = cls._truncate_string(
+                s1, cgi.escape(s2), Constants.MAX_CARD_WORDS)
+        if trunc:
+            notes += '...<a href="{}/card/{}">[more]</a>'.format(
+                    Constants.HOMEPAGE, card_id)
+        return Markup(notes)
+
+    @classmethod
+    def _fill_values(cls, results, truncate=True):
         values = {
             'card_id1': results[0].key.string_id(),
             'author1': results[0].source_author,
@@ -102,8 +129,13 @@ class Card(ndb.Model):
             'title1': results[0].title,
             'title_url1': results[0].title_url,
             'summary1': results[0].summary,
-            'detailed_notes1': results[0].detailed_notes,
             }
+        values['detailed_notes1'] = cls._format_detailed_notes(
+                results[0].summary,
+                results[0].detailed_notes,
+                results[0].key.string_id(),
+                truncate)
+
         if len(results) > 1:
             values['card_id2'] = results[1].key.string_id()
             values['author2'] = results[1].source_author
@@ -116,7 +148,11 @@ class Card(ndb.Model):
             values['title2'] = results[1].title
             values['title_url2'] = results[1].title_url
             values['summary2'] = results[1].summary
-            values['detailed_notes2'] = results[1].detailed_notes
+            values['detailed_notes2'] = cls._format_detailed_notes(
+                    results[1].summary,
+                    results[1].detailed_notes,
+                    results[1].key.string_id(),
+                    truncate)
 
             values['card_id3'] = results[2].key.string_id()
             values['author3'] = results[2].source_author
@@ -129,7 +165,11 @@ class Card(ndb.Model):
             values['title3'] = results[2].title
             values['title_url3'] = results[2].title_url
             values['summary3'] = results[2].summary
-            values['detailed_notes3'] = results[2].detailed_notes
+            values['detailed_notes3'] = cls._format_detailed_notes(
+                    results[2].summary,
+                    results[2].detailed_notes,
+                    results[2].key.string_id(),
+                    truncate)
 
             values['card_id4'] = results[3].key.string_id()
             values['author4'] = results[3].source_author
@@ -142,6 +182,10 @@ class Card(ndb.Model):
             values['title4'] = results[3].title
             values['title_url4'] = results[3].title_url
             values['summary4'] = results[3].summary
-            values['detailed_notes4'] = results[3].detailed_notes
+            values['detailed_notes4'] = cls._format_detailed_notes(
+                    results[3].summary,
+                    results[3].detailed_notes,
+                    results[3].key.string_id(),
+                    truncate)
 
         return values

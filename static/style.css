@@ -32,7 +32,14 @@ body {
   margin-left: 15px;
   padding-left: 2px;
   margin-bottom: 15px;
-  height: 40vh;
+}
+
+.card-scrollable {
+  background-color: white;
+  margin-left: 15px;
+  padding-left: 2px;
+  margin-bottom: 15px;
+  height: 80vh;
   overflow-y: scroll;
 }
 
