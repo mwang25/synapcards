@@ -1,4 +1,3 @@
-# from google.appengine.ext import ndb
 import webapp2
 
 from card import Card
