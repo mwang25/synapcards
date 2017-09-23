@@ -10,7 +10,7 @@ from jinjawrapper import JinjaWrapper
 class CardHandler(webapp2.RequestHandler):
     def get(self, card_id):
         values = Card.by_id(card_id, truncate=False)
-        if values['card_id1'] == card_id:
+        if len(values['cards']) == 1:
             GlobalStats.incr_views()
             template = JinjaWrapper.get_template('card.html')
             self.response.write(template.render(values))

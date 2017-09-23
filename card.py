@@ -28,16 +28,16 @@ class Card(ndb.Model):
         k = ndb.Key(cls.KIND, card_id)
         result = k.get()
         if result is None:
-            return {'card_id1': None}
+            return {'cards': []}
         return cls._fill_values([result], truncate)
 
     @classmethod
     def latest_top_rated(cls):
-        # This assumes max_rating is 5.  I don't datastore allows me to query
-        # for entries where rating == max_rating.
+        # This assumes max_rating is 5.  I don't think datastore allows me to
+        # query for entries where rating == max_rating.
         query = Card.query(Card.rating == 5)
         query1 = query.order(-Card.last_update_datetime)
-        results = query1.fetch(4)
+        results = query1.fetch(5)
         return cls._fill_values(results)
 
     @classmethod
@@ -48,10 +48,7 @@ class Card(ndb.Model):
         query1 = query.order(-Card.last_update_datetime)
         results = query1.fetch(8)
         if results is None:
-            return {
-                'featured_cards_id': None,
-                'card_id1': None,
-                }
+            return {'featured_cards_id': None}
         return cls._fill_featured_values(results)
 
     @classmethod
@@ -82,12 +79,19 @@ class Card(ndb.Model):
         values.update(cls._fill_values(card_results))
 
         # Create links to previous featured cards
-        if len(results) > 1:
-            pub = results[1].source_publish_datetime.strftime(
-                results[1].source_publish_datetime_format)
-            values['featured_cards_published1'] = pub
-            values['featured_cards_id1'] = results[1].key.string_id()
-            values['featured_cards_title1'] = results[1].title
+        prev_featured_cards = []
+        for r in results[1:]:
+            prev = {
+                'featured_cards_id': r.key.string_id(),
+                'featured_cards_title': r.title,
+                'featured_cards_published':
+                    r.source_publish_datetime.strftime(
+                        r.source_publish_datetime_format),
+            }
+            prev_featured_cards.append(prev)
+
+        values['prev_featured_cards'] = prev_featured_cards
+
         return values
 
     @classmethod
@@ -117,75 +121,23 @@ class Card(ndb.Model):
 
     @classmethod
     def _fill_values(cls, results, truncate=True):
-        values = {
-            'card_id1': results[0].key.string_id(),
-            'author1': results[0].source_author,
-            'source1': results[0].source,
-            'published1': results[0].source_publish_datetime.strftime(
-                results[0].source_publish_datetime_format),
-            'tags1': [u.encode('ascii') for u in results[0].tags],
-            'rating1': results[0].rating,
-            'max_rating1': results[0].max_rating,
-            'title1': results[0].title,
-            'title_url1': results[0].title_url,
-            'summary1': results[0].summary,
+        cards = []
+        for r in results:
+            c = {
+                'card_id': r.key.string_id(),
+                'author': r.source_author,
+                'source': r.source,
+                'published': r.source_publish_datetime.strftime(
+                    r.source_publish_datetime_format),
+                'tags': [u.encode('ascii') for u in r.tags],
+                'rating': r.rating,
+                'max_rating': r.max_rating,
+                'title': r.title,
+                'title_url': r.title_url,
+                'summary': r.summary,
+                'detailed_notes': cls._format_detailed_notes(
+                    r.summary, r.detailed_notes, r.key.string_id(), truncate)
             }
-        values['detailed_notes1'] = cls._format_detailed_notes(
-                results[0].summary,
-                results[0].detailed_notes,
-                results[0].key.string_id(),
-                truncate)
+            cards.append(c)
 
-        if len(results) > 1:
-            values['card_id2'] = results[1].key.string_id()
-            values['author2'] = results[1].source_author
-            values['source2'] = results[1].source
-            values['published2'] = results[1].source_publish_datetime.strftime(
-                results[1].source_publish_datetime_format)
-            values['tags2'] = [u.encode('ascii') for u in results[1].tags]
-            values['rating2'] = results[1].rating
-            values['max_rating2'] = results[1].max_rating
-            values['title2'] = results[1].title
-            values['title_url2'] = results[1].title_url
-            values['summary2'] = results[1].summary
-            values['detailed_notes2'] = cls._format_detailed_notes(
-                    results[1].summary,
-                    results[1].detailed_notes,
-                    results[1].key.string_id(),
-                    truncate)
-
-            values['card_id3'] = results[2].key.string_id()
-            values['author3'] = results[2].source_author
-            values['source3'] = results[2].source
-            values['published3'] = results[2].source_publish_datetime.strftime(
-                results[2].source_publish_datetime_format)
-            values['tags3'] = [u.encode('ascii') for u in results[2].tags]
-            values['rating3'] = results[2].rating
-            values['max_rating3'] = results[2].max_rating
-            values['title3'] = results[2].title
-            values['title_url3'] = results[2].title_url
-            values['summary3'] = results[2].summary
-            values['detailed_notes3'] = cls._format_detailed_notes(
-                    results[2].summary,
-                    results[2].detailed_notes,
-                    results[2].key.string_id(),
-                    truncate)
-
-            values['card_id4'] = results[3].key.string_id()
-            values['author4'] = results[3].source_author
-            values['source4'] = results[3].source
-            values['published4'] = results[3].source_publish_datetime.strftime(
-                results[3].source_publish_datetime_format)
-            values['tags4'] = [u.encode('ascii') for u in results[3].tags]
-            values['rating4'] = results[3].rating
-            values['max_rating4'] = results[3].max_rating
-            values['title4'] = results[3].title
-            values['title_url4'] = results[3].title_url
-            values['summary4'] = results[3].summary
-            values['detailed_notes4'] = cls._format_detailed_notes(
-                    results[3].summary,
-                    results[3].detailed_notes,
-                    results[3].key.string_id(),
-                    truncate)
-
-        return values
+        return {'cards': cards}

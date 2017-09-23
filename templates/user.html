@@ -66,95 +66,40 @@
           <br>
         </div>
       </div>
+      {% for c in cards %}
       <div class="row row-outer">
-      <div class="col-xs-12 col-md-5 card">
+        <div class="col-xs-12 card">
           <div class="row">
             <div class="col-xs-6 text-left">
-              <b>Card:</b><a href="../card/{{ card_id1 }}">{{ card_id1 }}</a>
+              <b>Card:</b><a href="../card/{{ c.card_id }}">{{ c.card_id }}</a>
             </div>
             <div class="col-xs-6 text-right">
               <b>TODO:</b> icons, menu
             </div>
           </div>
-          <h3><a href="{{ title_url1 }}">{{ title1 }}</a></h3>
-          <p>{{ summary1 }}</p>
+          <h3><a href="{{ c.title_url }}">{{ c.title }}</a></h3>
+          <p>{{ c.summary }}</p>
           <p>
-            <b>Author:</b> {{ author1 }}<br>
-            <b>Source:</b> {{ source1 }}<br>
-            <b>Published:</b> {{ published1 }}<br>
-            <b>Tags:</b> {{ tags1 }}<br>
-            <b>Rating:</b> {{ rating1 }}/{{ max_rating1}}
+            <b>Author:</b> {{ c.author }}<br>
+            <b>Source:</b> {{ c.source }}<br>
+            <b>Published:</b> {{ c.published }}<br>
+            <b>Tags:</b> {{ c.tags }}<br>
+            <b>Rating:</b> {{ c.rating }}/{{ c.max_rating }}
           </p>
-          <p>{{ detailed_notes1 }}</p>
-        </div>
-        <div class="col-xs-12 col-md-5 card">
-          <div class="row">
-            <div class="col-xs-6 text-left">
-              <b>Card:</b><a href="../card/{{ card_id2 }}">{{ card_id2 }}</a>
-            </div>
-            <div class="col-xs-6 text-right">
-              <b>TODO:</b> icons, menu
-            </div>
-          </div>
-          <h3><a href="{{ title_url2 }}">{{ title2 }}</a></h3>
-          <p>{{ summary2 }}</p>
-          <p>
-            <b>Author:</b> {{ author2 }}<br>
-            <b>Source:</b> {{ source2 }}<br>
-            <b>Published:</b> {{ published2 }}<br>
-            <b>Tags:</b> {{ tags2 }}<br>
-            <b>Rating:</b> {{ rating2 }}/{{ max_rating2 }}
-          </p>
-          <p>{{ detailed_notes2 }}</p>
+          <p>{{ c.detailed_notes }}</p>
         </div>
       </div>
-      <div class="row row-outer">
-        <div class="col-xs-12 col-md-5 card">
-          <div class="row">
-            <div class="col-xs-6 text-left">
-              <b>Card:</b><a href="../card/{{ card_id3 }}">{{ card_id3 }}</a>
-            </div>
-            <div class="col-xs-6 text-right">
-              <b>TODO:</b> icons, menu
-            </div>
-          </div>
-          <h3><a href="{{ title_url3 }}">{{ title3 }}</a></h3>
-          <p>{{ summary3 }}</p>
-          <p>
-            <b>Author:</b> {{ author3 }}<br>
-            <b>Source:</b> {{ source3 }}<br>
-            <b>Published:</b> {{ published3 }}<br>
-            <b>Tags:</b> {{ tags3 }}<br>
-            <b>Rating:</b> {{ rating3 }}/{{ max_rating3 }}
-          </p>
-          <p>{{ detailed_notes3 }}</p>
-        </div>
-        <div class="col-xs-12 col-md-5 card">
-          <div class="row">
-            <div class="col-xs-6 text-left">
-              <b>Card:</b><a href="../card/{{ card_id4 }}">{{ card_id4 }}</a>
-            </div>
-            <div class="col-xs-6 text-right">
-              <b>TODO:</b> icons, menu
-            </div>
-          </div>
-          <h3><a href="{{ title_url4 }}">{{ title4 }}</a></h3>
-          <p>{{ summary4 }}</p>
-          <p>
-            <b>Author:</b> {{ author4 }}<br>
-            <b>Source:</b> {{ source4 }}<br>
-            <b>Published:</b> {{ published4 }}<br>
-            <b>Tags:</b> {{ tags4 }}<br>
-            <b>Rating:</b> {{ rating4 }}/{{ max_rating4 }}
-          </p>
-          <p>{{ detailed_notes4 }}</p>
-        </div>
-      </div>
+      {% endfor %}
       <div class="row row-outer">
         <div class="col-xs-12">
           <h2>Previous featured cards:</h2>
-          <b>[{{ featured_cards_published1 }}] </b>
-          <a href="../featuredcards/{{ featured_cards_id1 }}">{{ featured_cards_title1 }}</a><br>
+          <ul>
+          {% for p in prev_featured_cards %}
+            <li><b>[{{ p.featured_cards_published }}] </b>
+              <a href="../featuredcards/{{ p.featured_cards_id }}">
+                {{ p.featured_cards_title }}</a></li>
+          {% endfor %}
+          </ul>
         </div>
       </div>
     </div>
