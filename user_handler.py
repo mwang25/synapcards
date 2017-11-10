@@ -2,8 +2,8 @@ import webapp2
 
 from card import Card
 from constants import Constants
-from globalstats import GlobalStats
-from jinjawrapper import JinjaWrapper
+from global_stats import GlobalStats
+from jinja_wrapper import JinjaWrapper
 from user import User
 
 

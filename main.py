@@ -13,10 +13,10 @@
 # limitations under the License.
 import webapp2
 
-from cardhandler import CardHandler
-from featuredcardshandler import FeaturedCardsHandler
-from indexhandler import IndexHandler
-from userhandler import UserHandler
+from card_handler import CardHandler
+from featured_cards_handler import FeaturedCardsHandler
+from index_handler import IndexHandler
+from user_handler import UserHandler
 
 
 app = webapp2.WSGIApplication([

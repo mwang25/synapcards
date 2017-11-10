@@ -9,7 +9,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 
 class JinjaWrapper():
-
     @staticmethod
     def get_template(filename):
         return JINJA_ENVIRONMENT.get_template(filename)
