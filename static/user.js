@@ -18,16 +18,16 @@ $(function(){
   // https://backend-dot-<PROJECT_ID>.appspot.com as specified in the
   // backend's app.yaml file.
   // var backendHostUrl = 'https://backend-dot-fireproto-5c009.appspot.com';
-  var backendHostUrl = 'https://fireproto-5c009.appspot.com';
+  var backendHostUrl = 'https://synapcards-178123.appspot.com';
 
   // Initialize Firebase
   var config = {
-    apiKey: "AIzaSyCIM6OZhxVrFifKwAtHpggBO-uqHjzACuc",
-    authDomain: "fireproto-5c009.firebaseapp.com",
-    databaseURL: "https://fireproto-5c009.firebaseio.com",
-    projectId: "fireproto-5c009",
-    storageBucket: "fireproto-5c009.appspot.com",
-    messagingSenderId: "500913618000"
+    apiKey: "AIzaSyCOrg4vnNpWniyNPB4_Gy2n0mv5t95DJJI",
+    authDomain: "synapcards-178123.firebaseapp.com",
+    databaseURL: "https://synapcards-178123.firebaseio.com",
+    projectId: "synapcards-178123",
+    storageBucket: "synapcards-178123.appspot.com",
+    messagingSenderId: "266358714814"
   };
 
   // This is passed into the backend to authenticate the user.

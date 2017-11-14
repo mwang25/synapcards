@@ -18,3 +18,7 @@ handlers:
   static_dir: static
 - url: /.*
   script: main.app
+
+env_variables:
+  # Replace with your Firebase project ID.
+  FIREBASE_PROJECT_ID: 'synapcards-178123'
