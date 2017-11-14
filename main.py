@@ -16,10 +16,16 @@ import webapp2
 from card_handler import CardHandler
 from featured_cards_handler import FeaturedCardsHandler
 from index_handler import IndexHandler
+from signin_ajax import SigninAjax
+from signin_handler import SigninHandler
+from user_ajax import UserAjax
 from user_handler import UserHandler
 
 
 app = webapp2.WSGIApplication([
+    ('/signinajax', SigninAjax),
+    ('/signin', SigninHandler),
+    ('/userajax', UserAjax),
     ('/user/([\d\w_]+)', UserHandler),
     ('/card/([\d\w_]+:\d+)', CardHandler),
     ('/featuredcards/([\d\w_]+:\d+)', FeaturedCardsHandler),

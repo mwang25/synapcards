@@ -1,9 +1,15 @@
 import webapp2
+import google.auth.transport.requests
+import google.oauth2.id_token
 
 from card import Card
 from constants import Constants
 from global_stats import GlobalStats
 from jinja_wrapper import JinjaWrapper
+from user import User
+
+
+HTTP_REQUEST = google.auth.transport.requests.Request()
 
 
 class IndexHandler(webapp2.RequestHandler):
@@ -14,6 +20,7 @@ class IndexHandler(webapp2.RequestHandler):
             values['total_cards'] = GlobalStats.total_cards()
             values['total_users'] = GlobalStats.total_users()
             values['total_views'] = GlobalStats.total_views()
+            values['top_users'] = User.query_most_cards()
             values['homepage'] = Constants.HOMEPAGE
             template = JinjaWrapper.get_template('index.html')
             self.response.write(template.render(values))

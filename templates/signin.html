@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- saved from url=(0097)https://storage.googleapis.com/supplemental_media/udacityu/2730818600/bootstrap-prestructure.html -->
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>SynapCards</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:thin,regular,bold" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.css">
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="../static/signin.js"></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <img src="../static/colorful-network-synapcards.jpg" class="img-responsive" alt="synapcards logo">
+        </div>
+      </div>
+      <div class="row row-outer menu-bar">
+        <div class="col-xs-4 text-left">
+          <a href="../index.html">Home</a>
+        </div>
+        <div class="col-xs-4 text-center">
+          TODO: search
+        </div>
+        <div class="col-xs-4 text-right" id="signed-in-top">
+          <a href="{{ homepage }}" id="self-profile-link-top">
+          <span id="signed-in-user-id-top"></span></a>
+          <button id="sign-out">Sign out</button>
+        </div>
+        <div class="col-xs-4 text-right" id="signed-out-top">
+          <a href="{{ homepage }}/signin">Sign in</a>
+        </div>
+      </div>
+      <div class="row row-outer" id="signed-out">
+        <div class="col-xs-12 text-center">
+          <h3>Sign in to SynapCards:</h3>
+          <p>
+            SynapCards uses two external authentication providers (Google and
+            Facebook) because they can implement the authentication
+            system far better and more securely than this website can.  Please
+            use the same authentication provider every time.  If you use
+            different authentication providers, your sign in may fail.
+          </p>
+        </div>
+        <div id="firebaseui-auth-container"></div>
+      </div>
+      <div class="row row-outer" id="signed-in">
+        <div class="col-xs-12">
+          <h3>Welcome <span id="signed-in-user-id-container"></span>!</h3>
+          <p>
+          <span id="signed-in-new-user">
+            Your user id was generated based on the email address provided
+            by your authentication provider.  You can change your user id as
+            long as you do it before you add any cards.
+            Please review your user id and other settings on your</span>
+          <span id="signed-in-existing-user">
+            Here is a link to your</span>
+            <a href="{{ homepage }}" id="self-profile-link"> profile page</a>
+          </p>
+        </div>
+      </div>
+      <div class="row row-outer" id="sign-in-error">
+        <div class="col-xs-12">
+          <h3>Oops, there was an error in synapcards during sign in:</h3>
+          <p><span id="sign-in-error-message"></span></p>
+          <h3>Please sign out and continue as guest user.</h3>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

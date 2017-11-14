@@ -20,8 +20,15 @@
     </script>
     <title>SynapCards</title>
     <link href="https://fonts.googleapis.com/css?family=Lato:thin,regular,bold" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.css">
     <link rel="stylesheet" href="../static/bootstrap.min.css">
     <link rel="stylesheet" href="../static/style.css">
+    <script src="../static/user.js"></script>
   </head>
   <body>
     <div class="container-fluid">
@@ -31,76 +38,179 @@
         </div>
       </div>
       <div class="row row-outer menu-bar">
-        <div class="col-xs-3 text-left">
+        <div class="col-xs-4 text-left">
           <a href="../index.html">Home</a>
         </div>
-        <div class="col-xs-3 text-center">
-          <a href="../static/about.html">About</a>
-        </div>
-        <div class="col-xs-3 text-center">
+        <div class="col-xs-4 text-center">
           TODO: search
         </div>
-        <div class="col-xs-3 text-right">
-          TODO: sign-in
+        <div class="col-xs-4 text-right" id="signed-in-top">
+          <a href="{{ homepage }}" id="self-profile-link-top">
+          <span id="signed-in-user-id-top"></span></a>
+          <button id="sign-out">Sign out</button>
+        </div>
+        <div class="col-xs-4 text-right" id="signed-out-top">
+          <a href="{{ homepage }}/signin">Sign in</a>
+        </div>
+      </div>
+      <div class="row row-outer" id="static-info-section">
+        <div class="col-xs-12">
+          <h2>About {{ user_id }}:</h2>
+          <p>{{ profile }}</p>
+        </div>
+      </div>
+      <div class="row row-outer" id="dynamic-info-section">
+        <div class="col-xs-12">
+          <h2>Viewing your own info:</h2>
+          <h2>User id: <span id="dynamic-signed-in-user-id"></span></h2>
+          <h2>Profile: <span id="dynamic-profile-value"></span></h2>
+          <h2>The following fields are not visible to other people:</h2>
+          <h2>email: <span id="dynamic-email-value"></span></h2>
+          <h2>Timezone: <span id="dynamic-timezone-value"></span></h2>
+        </div>
+      </div>
+      <div id="form-section">
+        <div class="row row-outer">
+          <div class="col-xs-12">
+            <h2>Use this form to customize your settings:</h2>
+          </div>
+        </div>
+        <form action="" method="post">
+          <div class="row row-outer" id="form-userid-rw">
+            <div class="col-xs-3">User id:</div>
+            <div class="col-xs-8">
+              <input type="text" id=userid-textinput size=16 maxlength=16 />
+            </div>
+          </div>
+          <div class="row row-outer" id="form-userid-ro">
+            <div class="col-xs-3">User id:</div>
+            <div class="col-xs-8">
+              <p><span id="form-userid-container"></p>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-12">
+              <p>User id must start with a lower case letter, followed by a
+                maximum of 15 more characters consisting of lower case letters,
+                numbers, dot, or underscore.  User id may not be changed after
+                you have added a card.</p>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-12 text-error">
+              <p><span id="error-user-id-container"></span></p>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Profile:</div>
+            <div class="col-xs-8">
+              <textarea class="textarea" rows=8 id="profile-textarea"></textarea>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Email:</div>
+            <div class="col-xs-8">
+              <input type="text" id="email-textinput" class=textarea />
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-12">
+              <p>Your email will be used for notifications from Synapcards (not
+                implemented yet) and will not be shown to other users.</p>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Timezone:</div>
+            <div class="col-xs-8">
+              <select id="timezone-dropdown">
+                {% for tz in timezones %}
+                    <option>{{ tz }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-12">
+              <p>Your timezone will not be shown to other users.</p>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-6">
+              <button id="save-button">Save</button>
+            </div>
+            <div class="col-xs-6">
+              <button id="cancel-button">Cancel Edit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="row row-outer" id="edit-buttons-section">
+        <div class="col-xs-12">
+          <hr>
+        </div>
+        <div class="col-xs-6">
+          <button id="edit-button">Edit Settings</button>
+        </div>
+        <div class="col-xs-6">
+          <button id="delete-account-button">Delete Account</button>
+        </div>
+      </div>
+      <div class="row row-outer" id="account-deleted-section">
+        <div class="col-xs-12">
+          <h2>This account has been deleted.</h2>
         </div>
       </div>
       <div class="row row-outer">
-        <div class="col-xs-12">
-          <h2>About {{ user_id }}</h2>
-          <p> {{ user_profile }}</p>
-        </div>
+          <div class="col-xs-12">
+              <h2>Cards</h2>
+              <b>Total Cards:</b> {{ user_total_cards }}<br>
+          </div>
       </div>
       <div class="row row-outer">
-        <div class="col-xs-12">
-          <h2>Cards</h2>
-          <b>Total Cards:</b> {{ user_total_cards }}<br>
-        </div>
-      </div>
-      <div class="row row-outer">
-        <div class="col-xs-12">
-          <h2>Featured Cards:</h2>
-          <p><b>{{ featured_cards_title }}</b></p>
-          <b>Published:</b> {{ featured_cards_published}}<br>
-          <b>Card:</b><a href="../card/{{ featured_cards_id }}">{{ featured_cards_id }}</a>
-          <br>
-          <br>
-        </div>
+          <div class="col-xs-12">
+              <h2>Featured Cards:</h2>
+              <p><b>{{ featured_cards_title }}</b></p>
+              <b>Published:</b> {{ featured_cards_published}}<br>
+              <b>Card:</b><a href="../card/{{ featured_cards_id }}">{{ featured_cards_id }}</a>
+              <br>
+              <br>
+          </div>
       </div>
       {% for c in cards %}
       <div class="row row-outer">
-        <div class="col-xs-12 card">
-          <div class="row">
-            <div class="col-xs-6 text-left">
-              <b>Card:</b><a href="../card/{{ c.card_id }}">{{ c.card_id }}</a>
-            </div>
-            <div class="col-xs-6 text-right">
-              <b>TODO:</b> icons, menu
-            </div>
+          <div class="col-xs-12 card">
+              <div class="row">
+                  <div class="col-xs-6 text-left">
+                      <b>Card:</b><a href="../card/{{ c.card_id }}">{{ c.card_id }}</a>
+                  </div>
+                  <div class="col-xs-6 text-right">
+                      <b>TODO:</b> icons, menu
+                  </div>
+              </div>
+              <h3><a href="{{ c.title_url }}">{{ c.title }}</a></h3>
+              <p>{{ c.summary }}</p>
+              <p>
+              <b>Author:</b> {{ c.author }}<br>
+              <b>Source:</b> {{ c.source }}<br>
+              <b>Published:</b> {{ c.published }}<br>
+              <b>Tags:</b> {{ c.tags }}<br>
+              <b>Rating:</b> {{ c.rating }}/{{ c.max_rating }}
+              </p>
+              <p>{{ c.detailed_notes }}</p>
           </div>
-          <h3><a href="{{ c.title_url }}">{{ c.title }}</a></h3>
-          <p>{{ c.summary }}</p>
-          <p>
-            <b>Author:</b> {{ c.author }}<br>
-            <b>Source:</b> {{ c.source }}<br>
-            <b>Published:</b> {{ c.published }}<br>
-            <b>Tags:</b> {{ c.tags }}<br>
-            <b>Rating:</b> {{ c.rating }}/{{ c.max_rating }}
-          </p>
-          <p>{{ c.detailed_notes }}</p>
-        </div>
       </div>
       {% endfor %}
       <div class="row row-outer">
-        <div class="col-xs-12">
-          <h2>Previous featured cards:</h2>
-          <ul>
-          {% for p in prev_featured_cards %}
-            <li><b>[{{ p.featured_cards_published }}] </b>
-              <a href="../featuredcards/{{ p.featured_cards_id }}">
-                {{ p.featured_cards_title }}</a></li>
-          {% endfor %}
-          </ul>
-        </div>
+          <div class="col-xs-12">
+              <h2>Previous featured cards:</h2>
+              <ul>
+                  {% for p in prev_featured_cards %}
+                  <li><b>[{{ p.featured_cards_published }}] </b>
+                      <a href="../featuredcards/{{ p.featured_cards_id }}">
+                          {{ p.featured_cards_title }}</a></li>
+                  {% endfor %}
+              </ul>
+          </div>
       </div>
     </div>
   </body>

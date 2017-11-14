@@ -20,8 +20,15 @@
     </script>
     <title>SynapCards</title>
     <link href="https://fonts.googleapis.com/css?family=Lato:thin,regular,bold" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.css">
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/style.css">
+    <script src="static/signin.js"></script>
   </head>
   <body>
     <div class="container-fluid">
@@ -31,17 +38,19 @@
         </div>
       </div>
       <div class="row row-outer menu-bar">
-        <div class="col-xs-3 text-left">
-          Home
-        </div>
-        <div class="col-xs-3 text-center">
+        <div class="col-xs-4 text-left">
           <a href="static/about.html">About</a>
         </div>
-        <div class="col-xs-3 text-center">
+        <div class="col-xs-4 text-center">
           TODO: search
         </div>
-        <div class="col-xs-3 text-right">
-          TODO: sign-in
+        <div class="col-xs-4 text-right" id="signed-in-top">
+          <a href="{{ homepage }}" id="self-profile-link-top">
+          <span id="signed-in-user-id-top"></span></a>
+          <button id="sign-out">Sign out</button>
+        </div>
+        <div class="col-xs-4 text-right" id="signed-out-top">
+          <a href="{{ homepage }}/signin">Sign in</a>
         </div>
       </div>
       <div class="row row-outer">
@@ -54,11 +63,11 @@
             <a href=static/about.html>about</a> page.
           </p>
           <p>
-            This website is in a very preliminary state.  Eventually you will
+            This website is under development.  For now, it just shows the
+            most recently added top-rated cards on the home page, and some
+            featured cards on each person's profile page.  Eventually you will
             be able to add your own cards to your own account, search them,
-            and share them with whomever you want.  For now, I will show the
-            most recently added top-rated cards on this page, and some
-            featured cards on my profile page.
+            and control who can see your cards (public, shared, or private).
           </p>
         </div>
       </div>
@@ -66,15 +75,17 @@
         <div class="col-xs-12">
           <h2>Users</h2>
           <b>Total Users:</b> {{ total_users }}<br>
-          <a href="{{ homepage }}/user/mwang25">mwang25</a><br>
+          <b>Top 5 users with most cards:</b>
         </div>
       </div>
+      {% for u in top_users %}
       <div class="row row-outer">
         <div class="col-xs-12">
-          <h2>Cards</h2>
-          <b>Total Cards:</b> {{ total_cards }}<br>
+          <p><a href="{{ homepage }}/user/{{ u.user_id }}">{{ u.user_id }}</a>
+           <span> ({{ u.total_cards }})</span></p>
         </div>
       </div>
+      {% endfor %}
       <div class="row row-outer">
         <div class="col-xs-12">
           <h2>Recently Added Top Rated Cards:</h2>
@@ -106,7 +117,10 @@
       {% endfor %}
       <div class="row row-outer">
         <div class="col-xs-12">
-          <b>Total views across entire site:</b> {{ total_views }}<br>
+          <b>Total Cards:</b> {{ total_cards }}
+        </div>
+        <div class="col-xs-12">
+          <b>Total views across entire site:</b> {{ total_views }}
         </div>
       </div>
     </div>
