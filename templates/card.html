@@ -20,8 +20,14 @@
     </script>
     <title>SynapCards</title>
     <link href="https://fonts.googleapis.com/css?family=Lato:thin,regular,bold" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.js"></script>
     <link rel="stylesheet" href="../static/bootstrap.min.css">
     <link rel="stylesheet" href="../static/style.css">
+    <script src="../static/signin.js"></script>
   </head>
   <body>
     <div class="container-fluid">
@@ -31,17 +37,19 @@
         </div>
       </div>
       <div class="row row-outer menu-bar">
-        <div class="col-xs-3 text-left">
+        <div class="col-xs-4 text-left">
           <a href="../index.html">Home</a>
         </div>
-        <div class="col-xs-3 text-center">
-          <a href="../static/about.html">About</a>
-        </div>
-        <div class="col-xs-3 text-center">
+        <div class="col-xs-4 text-center">
           TODO: search
         </div>
-        <div class="col-xs-3 text-right">
-          TODO: sign-in
+        <div class="col-xs-4 text-right" id="signed-in-top">
+          <a href="{{ homepage }}" id="self-profile-link-top">
+          <span id="signed-in-user-id-top"></span></a>
+          <button id="sign-out">Sign out</button>
+        </div>
+        <div class="col-xs-4 text-right" id="signed-out-top">
+          <a href="{{ homepage }}/signin">Sign in</a>
         </div>
       </div>
       {% for c in cards %}
