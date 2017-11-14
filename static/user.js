@@ -18,7 +18,7 @@ $(function(){
   // https://backend-dot-<PROJECT_ID>.appspot.com as specified in the
   // backend's app.yaml file.
   // var backendHostUrl = 'https://backend-dot-fireproto-5c009.appspot.com';
-  var backendHostUrl = 'https://synapcards-178123.appspot.com';
+  var backendHostUrl = 'https://synapcards.com';
 
   // Initialize Firebase
   var config = {
