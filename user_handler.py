@@ -12,8 +12,8 @@ class UserHandler(webapp2.RequestHandler):
         values = User.get(user_id)
         if values is not None and values['user_id'] == user_id:
             GlobalStats.incr_views()
-            card_values = Card.latest_featured(user_id)
-            values.update(card_values)
+            values['timezones'] = Constants.SUPPORTED_TIMEZONES
+            values.update(Card.latest_featured(user_id))
             template = JinjaWrapper.get_template('user.html')
             self.response.write(template.render(values))
         else:

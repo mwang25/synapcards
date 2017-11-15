@@ -47,7 +47,7 @@ class Card(ndb.Model):
                 Card.tags.IN([Constants.FEATURED_CARDS]))
         query1 = query.order(-Card.last_update_datetime)
         results = query1.fetch(8)
-        if results is None:
+        if results is None or len(results) == 0:
             return {'featured_cards_id': None}
         return cls._fill_featured_values(results)
 

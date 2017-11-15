@@ -61,18 +61,19 @@
       </div>
       <div class="row row-outer" id="dynamic-info-section">
         <div class="col-xs-12">
-          <h2>Viewing your own info:</h2>
-          <h2>User id: <span id="dynamic-signed-in-user-id"></span></h2>
-          <h2>Profile: <span id="dynamic-profile-value"></span></h2>
-          <h2>The following fields are not visible to other people:</h2>
-          <h2>email: <span id="dynamic-email-value"></span></h2>
-          <h2>Timezone: <span id="dynamic-timezone-value"></span></h2>
+          <h2>Your settings:</h2>
+          <h3>The following fields are visible to everyone:</h3>
+          <p><b>User id:</b> <span id="dynamic-signed-in-user-id"></span></p>
+          <p><b>Profile:</b> <span id="dynamic-profile-value"></span></p>
+          <h3>The following fields are not visible to other people:</h3>
+          <p><b>email:</b> <span id="dynamic-email-value"></span></p>
+          <p><b>Timezone:</b> <span id="dynamic-timezone-value"></span></p>
         </div>
       </div>
       <div id="form-section">
         <div class="row row-outer">
           <div class="col-xs-12">
-            <h2>Use this form to customize your settings:</h2>
+            <h2>Edit your settings:</h2>
           </div>
         </div>
         <form action="" method="post">
@@ -145,14 +146,14 @@
         </form>
       </div>
       <div class="row row-outer" id="edit-buttons-section">
-        <div class="col-xs-12">
-          <hr>
-        </div>
         <div class="col-xs-6">
           <button id="edit-button">Edit Settings</button>
         </div>
         <div class="col-xs-6">
           <button id="delete-account-button">Delete Account</button>
+        </div>
+        <div class="col-xs-12">
+          <hr>
         </div>
       </div>
       <div class="row row-outer" id="account-deleted-section">
@@ -163,7 +164,7 @@
       <div class="row row-outer">
           <div class="col-xs-12">
               <h2>Cards</h2>
-              <b>Total Cards:</b> {{ user_total_cards }}<br>
+              <b>Total Cards:</b> {{ total_cards }}<br>
           </div>
       </div>
       <div class="row row-outer">
@@ -202,7 +203,7 @@
       {% endfor %}
       <div class="row row-outer">
           <div class="col-xs-12">
-              <h2>Previous featured cards:</h2>
+              <h2>Previous Featured Cards:</h2>
               <ul>
                   {% for p in prev_featured_cards %}
                   <li><b>[{{ p.featured_cards_published }}] </b>
