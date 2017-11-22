@@ -3,6 +3,7 @@ class Constants():
     FEATURED_CARDS = 'featured cards'
     MAX_CARD_WORDS = 100
     MAX_CARDS_PER_USER = 100
+    MAX_RATING = 5
     MAX_USERS = 20
     SUPPORTED_TIMEZONES = [
         'US/Eastern',

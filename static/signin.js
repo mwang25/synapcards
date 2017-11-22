@@ -75,6 +75,8 @@ $(function(){
               link = backendHostUrl + '/user/' + data.signed_in_user_id;
               $('#self-profile-link').attr('href', link);
               $('#self-profile-link-top').attr('href', link);
+              link = backendHostUrl + '/card/' + data.signed_in_user_id + ':0';
+              $('#add-new-card-link').attr('href', link);
               $('#signed-out').hide();
             }
           });

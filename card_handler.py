@@ -8,9 +8,15 @@ from jinja_wrapper import JinjaWrapper
 
 class CardHandler(webapp2.RequestHandler):
     def get(self, card_id):
-        values = Card.by_id(card_id, truncate=False)
-        if len(values['cards']) == 1:
-            GlobalStats.incr_views()
+        (_, card_num) = Card.split_card_id(card_id)
+        if card_num == 0 or Card.exists(card_id):
+            values = {'ratings': range(1, Constants.MAX_RATING + 1)}
+            if card_num == 0:
+                values['card'] = {}
+            else:
+                GlobalStats.incr_views()
+                values['card'] = Card.get(card_id)
+
             template = JinjaWrapper.get_template('card.html')
             self.response.write(template.render(values))
         else:

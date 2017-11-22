@@ -1,8 +1,14 @@
 import cgi
+import datetime
 
 from google.appengine.ext import ndb
 from jinja2 import Markup
 from constants import Constants
+
+
+class CardError(RuntimeError):
+    def __init__(self, arg):
+        self.message = arg
 
 
 class Card(ndb.Model):
@@ -24,12 +30,103 @@ class Card(ndb.Model):
     last_update_datetime = ndb.DateTimeProperty()
 
     @classmethod
-    def by_id(cls, card_id, truncate):
-        k = ndb.Key(cls.KIND, card_id)
-        result = k.get()
-        if result is None:
-            return {'cards': []}
-        return cls._fill_values([result], truncate)
+    def make_card_id(cls, user_id, card_num):
+        return user_id + ':' + str(card_num)
+
+    @classmethod
+    def split_card_id(cls, card_id):
+        a = card_id.split(':')
+        return a[0], int(a[1])
+
+    @classmethod
+    def _get(cls, card_id):
+        return ndb.Key(cls.KIND, card_id).get()
+
+    @classmethod
+    def get(cls, card_id, truncate=False):
+        card = cls._get(card_id)
+        if not card:
+            raise CardError('Does not exist')
+
+        return cls._fill_dict(card, truncate)
+
+    @classmethod
+    def exists(cls, card_id):
+        result = cls._get(card_id)
+        return result is not None
+
+    @classmethod
+    def add(
+        cls,
+        card_id,
+        title,
+        title_url,
+        summary,
+        author,
+        source,
+        tags,
+        rating,
+        detailed_notes
+    ):
+        if cls.exists(card_id):
+            msg = 'Cannot add card with existing card_id ({})'.format(card_id)
+            raise CardError(msg)
+
+        if int(rating) < 1 or int(rating) > Constants.MAX_RATING:
+            raise CardError('invalid rating ({})'.format(rating))
+
+        (user_id, _) = cls.split_card_id(card_id)
+
+        Card(
+            key=ndb.Key(cls.KIND, card_id),
+            title=title,
+            title_url=title_url,
+            summary=summary,
+            source_author=author,
+            source=source,
+            tags=[t.strip() for t in tags.split(',')],
+            rating=int(rating),
+            detailed_notes=detailed_notes,
+            owner=user_id,
+            max_rating=Constants.MAX_RATING,
+            creation_datetime=datetime.datetime.utcnow(),
+            last_update_datetime=datetime.datetime.utcnow(),
+        ).put()
+
+    @classmethod
+    def update(
+        cls,
+        card_id,
+        title,
+        title_url,
+        summary,
+        author,
+        source,
+        tags,
+        rating,
+        detailed_notes
+    ):
+        card = cls._get(card_id)
+        if not card:
+            raise CardError('Does not exist')
+
+        if int(rating) < 1 or int(rating) > Constants.MAX_RATING:
+            raise CardError('invalid rating ({})'.format(rating))
+
+        card.title = title
+        card.title_url = title_url
+        card.summary = summary
+        card.source_author = author
+        card.source = source
+        card.tags = [t.strip() for t in tags.split(',')]
+        card.rating = int(rating)
+        card.detailed_notes = detailed_notes
+        card.last_update_datetime = datetime.datetime.utcnow()
+        card.put()
+
+    @classmethod
+    def delete(cls, card_id):
+        ndb.Key(cls.KIND, card_id).delete()
 
     @classmethod
     def latest_top_rated(cls):
@@ -38,7 +135,7 @@ class Card(ndb.Model):
         query = Card.query(Card.rating == 5)
         query1 = query.order(-Card.last_update_datetime)
         results = query1.fetch(5)
-        return cls._fill_values(results)
+        return [cls._fill_dict(r, truncate=True) for r in results]
 
     @classmethod
     def latest_featured(cls, user_id):
@@ -47,36 +144,34 @@ class Card(ndb.Model):
                 Card.tags.IN([Constants.FEATURED_CARDS]))
         query1 = query.order(-Card.last_update_datetime)
         results = query1.fetch(8)
-        if results is None or len(results) == 0:
-            return {'featured_cards_id': None}
-        return cls._fill_featured_values(results)
+        if results and len(results) > 0:
+            return cls._fill_featured_values(results)
+
+        return {'featured_cards_id': None}
 
     @classmethod
     def by_featured_cards_id(cls, card_id):
-        k = ndb.Key(cls.KIND, card_id)
-        result = k.get()
-        if result is None:
-            return {'featured_cards_id': None}
-        return cls._fill_featured_values([result])
+        if cls.exists(card_id):
+            return cls._fill_featured_values([cls._get(card_id)])
+
+        return {'featured_cards_id': None}
 
     @classmethod
     def _fill_featured_values(cls, results):
         values = {
             'featured_cards_id': results[0].key.string_id(),
             'featured_cards_title': results[0].title,
-            'featured_cards_published':
-                results[0].source_publish_datetime.strftime(
-                    results[0].source_publish_datetime_format),
+            'featured_cards_published': cls._format_published(
+                results[0].source_publish_datetime,
+                results[0].source_publish_datetime_format),
             }
 
         # Get info about each of the featured cards
-        card_results = []
+        cards = []
         for card_id in results[0].detailed_notes.split():
-            r = ndb.Key(cls.KIND, card_id).get()
-            if r is not None:
-                card_results.append(r)
-
-        values.update(cls._fill_values(card_results))
+            if cls.exists(card_id):
+                cards.append(cls.get(card_id, truncate=True))
+        values['cards'] = cards
 
         # Create links to previous featured cards
         prev_featured_cards = []
@@ -84,9 +179,9 @@ class Card(ndb.Model):
             prev = {
                 'featured_cards_id': r.key.string_id(),
                 'featured_cards_title': r.title,
-                'featured_cards_published':
-                    r.source_publish_datetime.strftime(
-                        r.source_publish_datetime_format),
+                'featured_cards_published': cls._format_published(
+                    r.source_publish_datetime,
+                    r.source_publish_datetime_format),
             }
             prev_featured_cards.append(prev)
 
@@ -120,24 +215,30 @@ class Card(ndb.Model):
         return Markup(notes)
 
     @classmethod
-    def _fill_values(cls, results, truncate=True):
-        cards = []
-        for r in results:
-            c = {
-                'card_id': r.key.string_id(),
-                'author': r.source_author,
-                'source': r.source,
-                'published': r.source_publish_datetime.strftime(
-                    r.source_publish_datetime_format),
-                'tags': [u.encode('ascii') for u in r.tags],
-                'rating': r.rating,
-                'max_rating': r.max_rating,
-                'title': r.title,
-                'title_url': r.title_url,
-                'summary': r.summary,
-                'detailed_notes': cls._format_detailed_notes(
-                    r.summary, r.detailed_notes, r.key.string_id(), truncate)
-            }
-            cards.append(c)
+    def _format_published(cls, dt, format):
+        if dt and format:
+            return dt.strftime(format)
 
-        return {'cards': cards}
+        return ''
+
+    @classmethod
+    def _fill_dict(cls, card, truncate):
+        return {
+            'card_id': card.key.string_id(),
+            'author': card.source_author,
+            'source': card.source,
+            'published': cls._format_published(
+                card.source_publish_datetime,
+                card.source_publish_datetime_format),
+            'tags': [u.encode('ascii') for u in card.tags],
+            'rating': card.rating,
+            'max_rating': card.max_rating,
+            'title': card.title,
+            'title_url': card.title_url,
+            'summary': card.summary,
+            'detailed_notes': cls._format_detailed_notes(
+                card.summary,
+                card.detailed_notes,
+                card.key.string_id(),
+                truncate)
+        }

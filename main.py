@@ -13,6 +13,7 @@
 # limitations under the License.
 import webapp2
 
+from card_ajax import CardAjax
 from card_handler import CardHandler
 from featured_cards_handler import FeaturedCardsHandler
 from index_handler import IndexHandler
@@ -27,6 +28,7 @@ app = webapp2.WSGIApplication([
     ('/signin', SigninHandler),
     ('/userajax', UserAjax),
     ('/user/([\d\w_]+)', UserHandler),
+    ('/cardajax', CardAjax),
     ('/card/([\d\w_]+:\d+)', CardHandler),
     ('/featuredcards/([\d\w_]+:\d+)', FeaturedCardsHandler),
     ('/(.*)', IndexHandler),

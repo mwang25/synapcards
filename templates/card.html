@@ -27,7 +27,7 @@
     <script src="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.js"></script>
     <link rel="stylesheet" href="../static/bootstrap.min.css">
     <link rel="stylesheet" href="../static/style.css">
-    <script src="../static/signin.js"></script>
+    <script src="../static/card.js"></script>
   </head>
   <body>
     <div class="container-fluid">
@@ -52,30 +52,142 @@
           <a href="{{ homepage }}/signin">Sign in</a>
         </div>
       </div>
-      {% for c in cards %}
-      <div class="row row-outer">
+      <div class="row row-outer" id="static-card-section">
         <div class="col-xs-12 card">
           <div class="row">
             <div class="col-xs-6 text-left">
-              <b>Card:</b> {{ c.card_id }}
+              <b>Card:</b> {{ card.card_id }}
             </div>
             <div class="col-xs-6 text-right">
               <b>TODO:</b> icons, menu
             </div>
           </div>
-          <h3><a href="{{ c.title_url }}">{{ c.title }}</a></h3>
-          <p>{{ c.summary }}</p>
+          <h3><a href="{{ card.title_url }}">{{ card.title }}</a></h3>
+          <p>{{ card.summary }}</p>
           <p>
-            <b>Author:</b> {{ c.author }}<br>
-            <b>Source:</b> {{ c.source }}<br>
-            <b>Published:</b> {{ c.published }}<br>
-            <b>Tags:</b> {{ c.tags }}<br>
-            <b>Rating:</b> {{ c.rating }}/{{ c.max_rating }}
+            <b>Author:</b> {{ card.author }}<br>
+            <b>Source:</b> {{ card.source }}<br>
+            <b>Published:</b> {{ card.published }}<br>
+            <b>Tags:</b> {{ card.tags }}<br>
+            <b>Rating:</b> {{ card.rating }}/{{ card.max_rating }}
           </p>
-          <p>{{ c.detailed_notes }}</p>
+          <p>{{ card.detailed_notes }}</p>
         </div>
       </div>
-      {% endfor %}
+      <div class="row row-outer" id="dynamic-card-section">
+        <div class="col-xs-12 card">
+          <div class="row">
+            <div class="col-xs-6 text-left">
+              <b>Card:</b> <span id="dynamic-card-id"></span></p>
+            </div>
+            <div class="col-xs-6 text-right">
+              <b>TODO:</b> icons, menu
+            </div>
+          </div>
+          <h3><a href="{{ homepage }}" id="dynamic-title-url">
+            <span id="dynamic-title"></span></a></h3>
+          <p><span id="dynamic-summary"></span></p>
+          <p>
+            <b>Author:</b> <span id="dynamic-author"></span><br>
+            <b>Source:</b> <span id="dynamic-source"></span><br>
+            <b>Published:</b> <span id="dynamic-published"></span><br>
+            <b>Tags:</b> <span id="dynamic-tags"></span><br>
+            <b>Rating:</b> <span id="dynamic-rating"></span>/<span id="dynamic-max-rating"></span>
+          </p>
+          <p><b>Detailed Notes:</b><span id="dynamic-detailed-notes"></span></p>
+        </div>
+      </div>
+      <div class="row row-outer" id="buttons-section">
+        <div class="col-xs-4">
+          <button id="add-button">Add New Card</button>
+        </div>
+        <div class="col-xs-4">
+          <button id="edit-button">Edit Card</button>
+        </div>
+        <div class="col-xs-4">
+          <button id="delete-button">Delete Card</button>
+        </div>
+        <div class="col-xs-12">
+          <hr>
+        </div>
+      </div>
+      <div class="row row-outer" id="card-deleted-section">
+        <div class="col-xs-12">
+          <h2>This card has been deleted.</h2>
+        </div>
+      </div>
+      <div id="form-section">
+        <form action="" method="post">
+          <div class="row row-outer">
+            <div class="col-xs-3">Title:</div>
+            <div class="col-xs-8">
+              <textarea class="textarea" rows=1 id="title-textarea"></textarea>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Title Link:</div>
+            <div class="col-xs-8">
+              <textarea class="textarea" rows=1 id="title-url-textarea"></textarea>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Summary:</div>
+            <div class="col-xs-8">
+              <textarea class="textarea" rows=2 id="summary-textarea"></textarea>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Author:</div>
+            <div class="col-xs-8">
+              <textarea class="textarea" rows=1 id="author-textarea"></textarea>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Source:</div>
+            <div class="col-xs-8">
+              <textarea class="textarea" rows=1 id="source-textarea"></textarea>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Tags:</div>
+            <div class="col-xs-8">
+              <textarea class="textarea" rows=1 id="tags-textarea"></textarea>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-12">
+              <p>
+                You can enter multiple tags for this card, separated by
+                 commas.  Tags may contain spaces.
+              </p>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Rating:</div>
+            <div class="col-xs-8">
+              <select id="rating-dropdown">
+                {% for r in ratings %}
+                    <option>{{ r }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Detailed Notes:</div>
+            <div class="col-xs-8">
+              <textarea class="textarea" rows=8 id="detailed-notes-textarea"></textarea>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-6">
+              <button id="save-button">Save</button>
+            </div>
+            <div class="col-xs-6">
+              <button id="cancel-button">Cancel Edit</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </body>
 </html>

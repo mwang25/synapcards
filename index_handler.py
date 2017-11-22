@@ -1,6 +1,4 @@
 import webapp2
-import google.auth.transport.requests
-import google.oauth2.id_token
 
 from card import Card
 from constants import Constants
@@ -9,14 +7,12 @@ from jinja_wrapper import JinjaWrapper
 from user import User
 
 
-HTTP_REQUEST = google.auth.transport.requests.Request()
-
-
 class IndexHandler(webapp2.RequestHandler):
     def get(self, path):
         if path == '' or path == '/' or path.startswith('index.htm'):
             GlobalStats.incr_views()
-            values = Card.latest_top_rated()
+            values = {}
+            values['cards'] = Card.latest_top_rated()
             values['total_cards'] = GlobalStats.total_cards()
             values['total_users'] = GlobalStats.total_users()
             values['total_views'] = GlobalStats.total_views()

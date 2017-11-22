@@ -16,6 +16,18 @@ class GlobalStats(ndb.Model):
         return result.count
 
     @classmethod
+    def incr_cards(cls):
+        result = ndb.Key(cls.KIND, cls.CARDS).get()
+        result.count += 1
+        result.put()
+
+    @classmethod
+    def decr_cards(cls):
+        result = ndb.Key(cls.KIND, cls.CARDS).get()
+        result.count -= 1
+        result.put()
+
+    @classmethod
     def total_users(cls):
         result = ndb.Key(cls.KIND, cls.USERS).get()
         return result.count
