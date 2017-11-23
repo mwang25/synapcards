@@ -12,3 +12,9 @@ indexes:
   - name: tags
   - name: last_update_datetime
     direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: last_update_datetime
+    direction: desc

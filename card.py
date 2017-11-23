@@ -136,12 +136,20 @@ class Card(ndb.Model):
         ndb.Key(cls.KIND, card_id).delete()
 
     @classmethod
-    def latest_top_rated(cls):
-        # This assumes max_rating is 5.  I don't think datastore allows me to
-        # query for entries where rating == max_rating.
-        query = Card.query(Card.rating == 5)
+    def latest_by_user(cls, user_id, count=3):
+        """Return the last count cards added by specified user"""
+        query = Card.query(Card.owner == user_id)
         query1 = query.order(-Card.last_update_datetime)
-        results = query1.fetch(5)
+        results = query1.fetch(count)
+        return [cls._fill_dict(r, truncate=True) for r in results]
+
+    @classmethod
+    def latest_top_rated(cls, count=5):
+        # I don't think datastore allows me to query for entries where
+        # Card.rating == Card.max_rating, so use global MAX_RATING.
+        query = Card.query(Card.rating == Constants.MAX_RATING)
+        query1 = query.order(-Card.last_update_datetime)
+        results = query1.fetch(count)
         return [cls._fill_dict(r, truncate=True) for r in results]
 
     @classmethod

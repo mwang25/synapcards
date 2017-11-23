@@ -175,6 +175,37 @@
       </div>
       <div class="row row-outer">
           <div class="col-xs-12">
+              <h2>Latest Cards:</h2>
+              <br>
+              <br>
+          </div>
+      </div>
+      {% for c in user_cards %}
+      <div class="row row-outer">
+          <div class="col-xs-12 card">
+              <div class="row">
+                  <div class="col-xs-6 text-left">
+                      <b>Card:</b><a href="../card/{{ c.card_id }}">{{ c.card_id }}</a>
+                  </div>
+                  <div class="col-xs-6 text-right">
+                      <b>TODO:</b> icons, menu
+                  </div>
+              </div>
+              <h3><a href="{{ c.title_url }}">{{ c.title }}</a></h3>
+              <p>{{ c.summary }}</p>
+              <p>
+              <b>Author:</b> {{ c.author }}<br>
+              <b>Source:</b> {{ c.source }}<br>
+              <b>Published:</b> {{ c.published }}<br>
+              <b>Tags:</b> {{ c.tags }}<br>
+              <b>Rating:</b> {{ c.rating }}/{{ c.max_rating }}
+              </p>
+              <p>{{ c.detailed_notes }}</p>
+          </div>
+      </div>
+      {% endfor %}
+      <div class="row row-outer">
+          <div class="col-xs-12">
               <h2>Featured Cards:</h2>
               <p><b>{{ featured_cards_title }}</b></p>
               <b>Published:</b> {{ featured_cards_published}}<br>
