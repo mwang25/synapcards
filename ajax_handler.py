@@ -14,7 +14,7 @@ class AjaxHandler(webapp2.RequestHandler):
         """Write headers needed required by ajax preflight requests"""
         self.response.headers.add_header('Access-Control-Allow-Origin', '*')
         self.response.headers.add_header(
-            'Access-Control-Allow-Headers', 'Authorization')
+            'Access-Control-Allow-Headers', 'Authorization, Content-Type')
         self.response.headers.add_header(
             'Access-Control-Allow-Methods', 'POST, GET, PUT')
 
