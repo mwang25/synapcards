@@ -53,6 +53,7 @@ $(function(){
           $('#form-section').hide();
           $('#edit-buttons-section').hide();
           $('#account-deleted-section').hide();
+          $('#main-section').show();
           $('#add-new-card-section').hide();
           $.ajax(backendHostUrl + '/signinajax', {
             headers: {
@@ -84,10 +85,12 @@ $(function(){
         $('#signed-out-top').show();
         if (accountDeleted) {
           $('#account-deleted-section').show();
+          $('#main-section').hide();
           $('#static-info-section').hide();
           $('#dynamic-info-section').hide();
         } else {
           $('#account-deleted-section').hide();
+          $('#main-section').show();
           $('#static-info-section').show();
           $('#dynamic-info-section').hide();
         }

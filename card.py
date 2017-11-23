@@ -136,6 +136,15 @@ class Card(ndb.Model):
         ndb.Key(cls.KIND, card_id).delete()
 
     @classmethod
+    def delete_cards_by_user(cls, user_id):
+        """Delete all cards added by specified user"""
+        query = Card.query(Card.owner == user_id)
+        keys = query.fetch(options=ndb.QueryOptions(keys_only=True))
+        # According to docs, NDB will automatically collect multiple
+        # calls to reduce round trips to server.
+        [k.delete() for k in keys]
+
+    @classmethod
     def latest_by_user(cls, user_id, count=3):
         """Return the last count cards added by specified user"""
         query = Card.query(Card.owner == user_id)

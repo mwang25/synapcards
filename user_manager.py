@@ -1,3 +1,4 @@
+from card import Card
 from constants import Constants
 from global_stats import GlobalStats
 from user import User
@@ -29,7 +30,7 @@ class UserManager():
 
     @classmethod
     def delete(cls, user_id):
-        # TODO: delete all cards created by this user
+        Card.delete_cards_by_user(user_id)
         User.delete(user_id)
         GlobalStats.decr_users()
         GlobalStats.incr_deleted_users()
