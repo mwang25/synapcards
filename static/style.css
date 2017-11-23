@@ -60,6 +60,10 @@ textarea
   color: #16da19;
 }
 
+.text-error {
+  color: #ff0066;
+}
+
 .text-thin {
   font-weight: 100;
 }

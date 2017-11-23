@@ -1,6 +1,7 @@
 from global_stats import GlobalStats
 from card import Card
 from user import User
+from publish_datetime import PublishDatetime
 
 
 class CardManagerError(RuntimeError):
@@ -15,8 +16,14 @@ class CardManager():
             raise CardManagerError('permission denied: user_id mismatch')
 
     @classmethod
+    def _verify_required_fields(cls, values):
+        if len(values['title']) == 0:
+            raise CardManagerError('Card must have title')
+
+    @classmethod
     def add(cls, user_id, values):
         cls._verify_user_id(user_id, values['user_id'])
+        cls._verify_required_fields(values)
 
         user_dict = User.get(user_id)
         if user_dict['total_cards'] >= user_dict['max_cards']:
@@ -30,6 +37,7 @@ class CardManager():
             values['summary'],
             values['author'],
             values['source'],
+            PublishDatetime().parse_string(values['published']),
             values['tags'],
             values['rating'],
             values['detailed_notes'])
@@ -40,6 +48,7 @@ class CardManager():
     @classmethod
     def update(cls, user_id, values):
         cls._verify_user_id(user_id, values['user_id'])
+        cls._verify_required_fields(values)
 
         card_id = Card.make_card_id(user_id, values['card_num'])
         Card.update(
@@ -49,6 +58,7 @@ class CardManager():
             values['summary'],
             values['author'],
             values['source'],
+            PublishDatetime().parse_string(values['published']),
             values['tags'],
             values['rating'],
             values['detailed_notes'])

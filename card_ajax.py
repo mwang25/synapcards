@@ -1,7 +1,9 @@
 from ajax_handler import AjaxHandler
 from user import User
+from card import CardError
 from card_manager import CardManager
 from card_manager import CardManagerError
+from publish_datetime import PublishDatetimeError
 
 
 class CardAjax(AjaxHandler):
@@ -30,7 +32,7 @@ class CardAjax(AjaxHandler):
                 else:
                     msg = 'invalid action ' + action
                     card_dict['error_message'] = msg
-            except CardManagerError as err:
+            except (CardError, CardManagerError, PublishDatetimeError) as err:
                 card_dict['error_message'] = err.message
             except Exception as e:
                 msg = str(type(e)) + ':' + ''.join(e.args)

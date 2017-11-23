@@ -4,6 +4,7 @@ import datetime
 from google.appengine.ext import ndb
 from jinja2 import Markup
 from constants import Constants
+from publish_datetime import PublishDatetime
 
 
 class CardError(RuntimeError):
@@ -64,6 +65,7 @@ class Card(ndb.Model):
         summary,
         author,
         source,
+        publish_dt,
         tags,
         rating,
         detailed_notes
@@ -84,6 +86,8 @@ class Card(ndb.Model):
             summary=summary,
             source_author=author,
             source=source,
+            source_publish_datetime=publish_dt.datetime,
+            source_publish_datetime_format=publish_dt.output_format,
             tags=[t.strip() for t in tags.split(',')],
             rating=int(rating),
             detailed_notes=detailed_notes,
@@ -102,6 +106,7 @@ class Card(ndb.Model):
         summary,
         author,
         source,
+        publish_dt,
         tags,
         rating,
         detailed_notes
@@ -118,6 +123,8 @@ class Card(ndb.Model):
         card.summary = summary
         card.source_author = author
         card.source = source
+        card.source_publish_datetime = publish_dt.datetime
+        card.source_publish_datetime_format = publish_dt.output_format
         card.tags = [t.strip() for t in tags.split(',')]
         card.rating = int(rating)
         card.detailed_notes = detailed_notes
@@ -161,9 +168,9 @@ class Card(ndb.Model):
         values = {
             'featured_cards_id': results[0].key.string_id(),
             'featured_cards_title': results[0].title,
-            'featured_cards_published': cls._format_published(
+            'featured_cards_published': str(PublishDatetime(
                 results[0].source_publish_datetime,
-                results[0].source_publish_datetime_format),
+                results[0].source_publish_datetime_format)),
             }
 
         # Get info about each of the featured cards
@@ -179,9 +186,9 @@ class Card(ndb.Model):
             prev = {
                 'featured_cards_id': r.key.string_id(),
                 'featured_cards_title': r.title,
-                'featured_cards_published': cls._format_published(
+                'featured_cards_published': str(PublishDatetime(
                     r.source_publish_datetime,
-                    r.source_publish_datetime_format),
+                    r.source_publish_datetime_format)),
             }
             prev_featured_cards.append(prev)
 
@@ -215,21 +222,14 @@ class Card(ndb.Model):
         return Markup(notes)
 
     @classmethod
-    def _format_published(cls, dt, format):
-        if dt and format:
-            return dt.strftime(format)
-
-        return ''
-
-    @classmethod
     def _fill_dict(cls, card, truncate):
         return {
             'card_id': card.key.string_id(),
             'author': card.source_author,
             'source': card.source,
-            'published': cls._format_published(
+            'published': str(PublishDatetime(
                 card.source_publish_datetime,
-                card.source_publish_datetime_format),
+                card.source_publish_datetime_format)),
             'tags': [u.encode('ascii') for u in card.tags],
             'rating': card.rating,
             'max_rating': card.max_rating,

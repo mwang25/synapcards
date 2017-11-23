@@ -116,6 +116,7 @@ $(function(){
     document.getElementById("summary-textarea").value = cardData.summary;
     document.getElementById("author-textarea").value = cardData.author;
     document.getElementById("source-textarea").value = cardData.source;
+    document.getElementById("published-textarea").value = cardData.published;
     document.getElementById("tags-textarea").value = cardData.tags;
     console.log("Set dropdown selected to " + cardData.rating);
     var dropdown = document.getElementById("rating-dropdown");
@@ -125,6 +126,7 @@ $(function(){
        }
     }
     document.getElementById("detailed-notes-textarea").value = cardData.detailed_notes;
+    $('#form-error-message').empty();
   }
 
   function clearForm() {
@@ -133,8 +135,10 @@ $(function(){
     document.getElementById("summary-textarea").value = "";
     document.getElementById("author-textarea").value = "";
     document.getElementById("source-textarea").value = "";
+    document.getElementById("published-textarea").value = "";
     document.getElementById("tags-textarea").value = "";
     document.getElementById("detailed-notes-textarea").value = "";
+    $('#form-error-message').empty();
   }
 
   function fillDynamicCard() {
@@ -199,6 +203,7 @@ $(function(){
   var addBtn =$('#add-button');
   addBtn.click(function(event) {
     event.preventDefault();
+    cardNum = '0';
     clearForm();
     showForm();
   });
@@ -230,12 +235,14 @@ $(function(){
     var summary = $('#summary-textarea').val();
     var author = $('#author-textarea').val();
     var source = $('#source-textarea').val();
+    var published = $('#published-textarea').val();
     var tags = $('#tags-textarea').val();
     var rating = $('#rating-dropdown').val();
     var detailedNotes = $('#detailed-notes-textarea').val();
 
     console.log("title: " + title);
     console.log("detailedNotes: " + detailedNotes);
+    console.log("cardNum: " + cardNum);
 
     $.ajax(backendHostUrl + '/cardajax', {
       headers: {
@@ -251,6 +258,7 @@ $(function(){
         'summary': summary,
         'author': author,
         'source': source,
+        'published': published,
         'tags': tags,
         'rating': rating,
         'detailed_notes': detailedNotes,
@@ -260,7 +268,7 @@ $(function(){
       // Hide form container and display updated user info data.
       if ('error_message' in data) {
         console.log("error detected: " + data.error_message)
-        $('#error-user-id-container').text(data.error_message);
+        $('#form-error-message').text(data.error_message);
       } else {
         console.log("post success (len good), go to dynamic data");
         cardData = data;
