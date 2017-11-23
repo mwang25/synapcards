@@ -53,6 +53,7 @@ $(function(){
           $('#form-section').hide();
           $('#edit-buttons-section').hide();
           $('#account-deleted-section').hide();
+          $('#add-new-card-section').hide();
           $.ajax(backendHostUrl + '/signinajax', {
             headers: {
               'Authorization': 'Bearer ' + userIdToken
@@ -71,6 +72,9 @@ $(function(){
               $('#dynamic-email-value').text(data.email);
               $('#dynamic-timezone-value').text(data.timezone);
               $('#edit-buttons-section').show();
+              link = backendHostUrl + '/card/' + data.signed_in_user_id + ':0';
+              $('#add-new-card-link').attr('href', link);
+              $('#add-new-card-section').show();
             }
           });
         });
@@ -89,9 +93,8 @@ $(function(){
         }
         $('#form-section').hide();
         $('#edit-buttons-section').hide();
+        $('#add-new-card-section').hide();
       }
-    // [END onAuthStateChanged]
-
     });
   }
 
