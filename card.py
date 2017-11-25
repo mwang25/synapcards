@@ -24,6 +24,7 @@ class Card(ndb.Model):
     detailed_notes = ndb.TextProperty()
     rating = ndb.IntegerProperty()
     max_rating = ndb.IntegerProperty()
+    privacy = ndb.StringProperty()
     tags = ndb.StringProperty(repeated=True)
     source_publish_datetime = ndb.DateTimeProperty()
     source_publish_datetime_format = ndb.StringProperty()
@@ -93,6 +94,7 @@ class Card(ndb.Model):
             detailed_notes=detailed_notes,
             owner=user_id,
             max_rating=Constants.MAX_RATING,
+            privacy='public',
             creation_datetime=datetime.datetime.utcnow(),
             last_update_datetime=datetime.datetime.utcnow(),
         ).put()
