@@ -1,5 +1,6 @@
 from global_stats import GlobalStats
 from card import Card
+from constants import Constants
 from user import User
 from publish_datetime import PublishDatetime
 
@@ -30,6 +31,9 @@ class CardManager():
             raise CardManagerError('User max card limit reached')
 
         card_id = Card.make_card_id(user_id, user_dict['next_card_num'])
+        if Constants.FEATURED_CARDS in values['tags']:
+            values['title_url'] = '{}/featuredcards/{}'.format(
+                Constants.HOMEPAGE, card_id)
         Card.add(
             card_id,
             values['title'],
