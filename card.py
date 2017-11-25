@@ -187,6 +187,7 @@ class Card(ndb.Model):
         values = {
             'featured_cards_id': results[0].key.string_id(),
             'featured_cards_title': results[0].title,
+            'featured_cards_summary': results[0].summary,
             'featured_cards_published': str(PublishDatetime(
                 results[0].source_publish_datetime,
                 results[0].source_publish_datetime_format)),
@@ -197,7 +198,7 @@ class Card(ndb.Model):
         for card_id in results[0].detailed_notes.split():
             if cls.exists(card_id):
                 cards.append(cls.get(card_id, truncate=True))
-        values['cards'] = cards
+        values['featured_cards'] = cards
 
         # Create links to previous featured cards
         prev_featured_cards = []

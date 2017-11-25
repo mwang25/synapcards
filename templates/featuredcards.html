@@ -55,14 +55,14 @@
       <div class="row row-outer">
         <div class="col-xs-12">
           <h2>Featured Cards:</h2>
-          <p><b>{{ featured_cards_title }}</b></p>
+          <b>Card:</b><a href="../card/{{ featured_cards_id }}">{{ featured_cards_id }}</a><br>
           <b>Published:</b> {{ featured_cards_published}}<br>
-          <b>Card:</b><a href="../card/{{ featured_cards_id }}">{{ featured_cards_id }}</a>
-          <br>
+          <h3>{{ featured_cards_title }}</h3>
+          <p>{{ featured_cards_summary }}</p>
           <br>
         </div>
       </div>
-      {% for c in cards %}
+      {% for c in featured_cards %}
       <div class="row row-outer">
         <div class="col-xs-12 card">
           <div class="row">
