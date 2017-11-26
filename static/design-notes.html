@@ -33,8 +33,12 @@
           <h2>Design Notes</h2>
           <h3>Sections</h3>
           <p>
-            Optional featured cards, latest cards added, pinned cards which are
+            Pinned cards which are
             for the author for his own personal favorite cards.
+            <br>
+            Optional featured cards (done 11/25/17)
+            <br>
+            Latest cards added (done 11/25/17)
           </p>
           <h3>Cards</h3>
           <ol>
@@ -44,35 +48,34 @@
               hyperlink to the card itself.
             </li>
             <li>
-              Heart icon for likes.  Red color is like by
-              the author/owner of the card, pink color is like by other people but
-              not the author.  Below the icon is the total number of likes.
-              Or maybe the heart is red if there is any likes and the counter
-              says liked by you and x others.
+              Heart icon for likes.  Mouse over like icon to see how many likes.
+              Should author of the card be allowed to like his own card?  And
+              should the icon look different if the author has liked it?
             </li>
             <li>
               Eye icon for number of views.  Too fine grained?
             </li>
             <li>
               If this card is not owned by the viewer, then a bell icon (or
-              telescope) for getting notified of updates to this card.
+              telescope) for getting notified of updates to this card.  Too
+              fine grained?  Is following the user good enough?
             </li>
           </ol>
           <p>
-            Cards can be private, public, or view permissions granted to
-            specific users.  Should we ever allow other people to write to
+            Cards can be private, public, or shared, meaning view permissions
+            granted to specific users.  Should we ever allow other people to write to
             someone else's card?  Seems hard to deal with.  They could just
             create a shared account.
           </p>
           <h3>Card Drop down menu</h3>
           <ol>
-            <li>If this card is owned by the viewer, then edit option.</li>
             <li>
               If this card is owned by the viewer, then sharing option.
               Sharing allows the owner to make the card private, share with
-              other synapcard users, or make the card public.
+              other synapcard users, or make the card public.  Instead of putting
+              this in the drop down menu, configure it within the context of the
+              current add/delete/edit buttons and form?
             </li>
-            <li>If this card is owned by the viewer, then delete option.</li>
             <li>
               If this card is not owned by the viwer, then copy option.
               Copy will create a new card owned by the current viewer.  Once
@@ -89,7 +92,7 @@
             Support for users logging into their own accounts using
             oath/google identification.  Login information is needed to
             implement secure email updates, sharing, and support for multiple
-            users.
+            users.  (done 11/25/17)
           </p>
           <p>
             Each user can optionally create a profile page for him/herself.
@@ -98,14 +101,18 @@
             many added last month, distribution of tags,
             total views(?), total likes(?),
             when the user joined synapcards, etc.  Need at least one setting:
-            timezone the user lives in.
+            timezone the user lives in.  (Most of the information is there on
+            the user's profile/settings page.  Add more stuff, e.g. tags
+            distribution as time goes on.  11/25/17)
           </p>
           <h3>Privacy</h3>
           <p>
-            Every card, section, page will have privacy control.  They can be
+            Every card will have privacy control.  They can be
             set to private, shared with specific synapcard users, or public.
           </p>
           <h3>Releases</h3>
+          <p><b>0.3.1 (11/26/17)</b>: Add support for adding, editing, and
+            deleting cards.
           <p><b>0.3 (11/15/17)</b>: Add support for user login using Google
             and Facebook external authentication (using Firebase).  Also use
             javascript and ajax for dynamic webpages and form submission.</p>
