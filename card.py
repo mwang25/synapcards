@@ -1,5 +1,6 @@
 import cgi
 import datetime
+import HTMLParser
 
 from google.appengine.ext import ndb
 from jinja2 import Markup
@@ -232,14 +233,14 @@ class Card(ndb.Model):
     @classmethod
     def _format_detailed_notes(cls, s1, s2, card_id, truncate):
         if not truncate:
-            return Markup(s2)
+            return Markup(HTMLParser.HTMLParser().unescape(s2))
 
         (notes, trunc) = cls._truncate_string(
                 s1, cgi.escape(s2), Constants.MAX_CARD_WORDS)
         if trunc:
             notes += '...<a href="{}/card/{}">[more]</a>'.format(
                     Constants.HOMEPAGE, card_id)
-        return Markup(notes)
+        return Markup(HTMLParser.HTMLParser().unescape(notes))
 
     @classmethod
     def _fill_dict(cls, card, truncate):
