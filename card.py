@@ -250,7 +250,7 @@ class Card(ndb.Model):
             'published': str(PublishDatetime(
                 card.source_publish_datetime,
                 card.source_publish_datetime_format)),
-            'tags': [u.encode('ascii') for u in card.tags],
+            'tags': ', '.join([u.encode('ascii') for u in card.tags]),
             'rating': card.rating,
             'max_rating': card.max_rating,
             'title': card.title,
