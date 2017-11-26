@@ -232,7 +232,7 @@ class Card(ndb.Model):
     @classmethod
     def _format_detailed_notes(cls, s1, s2, card_id, truncate):
         if not truncate:
-            return s2
+            return Markup(s2)
 
         (notes, trunc) = cls._truncate_string(
                 s1, cgi.escape(s2), Constants.MAX_CARD_WORDS)

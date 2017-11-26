@@ -152,7 +152,7 @@ $(function(){
     $('#dynamic-tags').text(cardData.tags);
     $('#dynamic-rating').text(cardData.rating);
     $('#dynamic-max-rating').text(cardData.max_rating);
-    $('#dynamic-detailed-notes').text(cardData.detailed_notes);
+    $('#dynamic-detailed-notes').html(cardData.detailed_notes);
   }
 
   var signOutBtn =$('#sign-out');
