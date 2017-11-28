@@ -243,6 +243,13 @@ class Card(ndb.Model):
         return Markup(HTMLParser.HTMLParser().unescape(notes))
 
     @classmethod
+    def _format_title(cls, title, url):
+        if url and len(url) > 0:
+            return Markup('<a href="{}">{}</a>'.format(url, title))
+        else:
+            return title
+
+    @classmethod
     def _fill_dict(cls, card, truncate):
         return {
             'card_id': card.key.string_id(),
@@ -256,6 +263,7 @@ class Card(ndb.Model):
             'max_rating': card.max_rating,
             'title': card.title,
             'title_url': card.title_url,
+            'title_html': cls._format_title(card.title, card.title_url),
             'summary': card.summary,
             'detailed_notes': cls._format_detailed_notes(
                 card.summary,

@@ -62,7 +62,7 @@
               <b>TODO:</b> icons, menu
             </div>
           </div>
-          <h3><a href="{{ card.title_url }}">{{ card.title }}</a></h3>
+          <h3>{{ card.title_html }}</h3>
           <p>{{ card.summary }}</p>
           <p>
             <b>Author:</b> {{ card.author }}<br>
@@ -84,8 +84,7 @@
               <b>TODO:</b> icons, menu
             </div>
           </div>
-          <h3><a href="{{ homepage }}" id="dynamic-title-url">
-            <span id="dynamic-title"></span></a></h3>
+          <h3><span id="dynamic-title-html"></h3>
           <p><span id="dynamic-summary"></span></p>
           <p>
             <b>Author:</b> <span id="dynamic-author"></span><br>

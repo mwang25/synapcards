@@ -144,7 +144,7 @@ $(function(){
   function fillDynamicCard() {
     $('#dynamic-card-id').text(cardData.card_id);
     $('#dynamic-title').text(cardData.title);
-    $('#dynamic-title-url').attr('href', cardData.title_url);
+    $('#dynamic-title-html').html(cardData.title_html);
     $('#dynamic-summary').text(cardData.summary);
     $('#dynamic-author').text(cardData.author);
     $('#dynamic-source').text(cardData.source);
