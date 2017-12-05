@@ -272,6 +272,9 @@ $(function(){
       } else {
         console.log("post success (len good), go to dynamic data");
         cardData = data;
+        // When saving a new card, update cardNum to value assigned by backend.
+        cardNum = data.card_id.split(":")[1];
+        console.log("returned cardNum: " + cardNum)
         fillDynamicCard();
         $('#static-card-section').hide();
         $('#dynamic-card-section').show();
