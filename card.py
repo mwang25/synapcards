@@ -245,29 +245,36 @@ class Card(ndb.Model):
     @classmethod
     def _format_title(cls, title, url):
         if url and len(url) > 0:
-            return Markup('<a href="{}">{}</a>'.format(url, title))
+            safe_title = title.encode('ascii', errors='backslashreplace')
+            return Markup('<a href="{}">{}</a>'.format(url, safe_title))
         else:
             return title
 
     @classmethod
     def _fill_dict(cls, card, truncate):
-        return {
-            'card_id': card.key.string_id(),
-            'author': card.source_author,
-            'source': card.source,
-            'published': str(PublishDatetime(
-                card.source_publish_datetime,
-                card.source_publish_datetime_format)),
-            'tags': ', '.join([u.encode('ascii') for u in card.tags]),
-            'rating': card.rating,
-            'max_rating': card.max_rating,
-            'title': card.title,
-            'title_url': card.title_url,
-            'title_html': cls._format_title(card.title, card.title_url),
-            'summary': card.summary,
-            'detailed_notes': cls._format_detailed_notes(
-                card.summary,
-                card.detailed_notes,
-                card.key.string_id(),
-                truncate)
-        }
+        try:
+            return {
+                'card_id': card.key.string_id(),
+                'author': card.source_author,
+                'source': card.source,
+                'published': str(PublishDatetime(
+                    card.source_publish_datetime,
+                    card.source_publish_datetime_format)),
+                'tags': ', '.join(card.tags),
+                'rating': card.rating,
+                'max_rating': card.max_rating,
+                'title': card.title,
+                'title_url': card.title_url,
+                'title_html': cls._format_title(card.title, card.title_url),
+                'summary': card.summary,
+                'detailed_notes': cls._format_detailed_notes(
+                    card.summary,
+                    card.detailed_notes,
+                    card.key.string_id(),
+                    truncate)
+            }
+        except Exception as e:
+            msg = str(type(e))
+            return {
+                'error_message': msg
+            }
