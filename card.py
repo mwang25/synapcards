@@ -281,8 +281,7 @@ class Card(ndb.Model):
     @classmethod
     def _format_title(cls, title, url):
         if url and len(url) > 0:
-            safe_title = title.encode('ascii', errors='backslashreplace')
-            return Markup('<a href="{}">{}</a>'.format(url, safe_title))
+            return Markup(u'<a href="{}">{}</a>'.format(url, title))
         else:
             return title
 
