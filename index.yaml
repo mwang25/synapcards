@@ -2,7 +2,54 @@ indexes:
 
 - kind: Card
   properties:
+  - name: owner
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source_author
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
   - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: tags
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source_author
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: rating
+    direction: desc
   - name: last_update_datetime
     direction: desc
 
@@ -15,6 +62,191 @@ indexes:
 
 - kind: Card
   properties:
+  - name: source_author
+  - name: source
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source_author
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source_author
+  - name: tags
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source
+  - name: tags
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: tags
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
   - name: owner
+  - name: source_author
+  - name: source
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source_author
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source_author
+  - name: tags
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source
+  - name: tags
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: tags
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source_author
+  - name: source
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source_author
+  - name: source
+  - name: tags
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source_author
+  - name: tags
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source
+  - name: tags
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source_author
+  - name: source
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source_author
+  - name: source
+  - name: tags
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source_author
+  - name: tags
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source
+  - name: tags
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: source_author
+  - name: source
+  - name: tags
+  - name: rating
+    direction: desc
+  - name: last_update_datetime
+    direction: desc
+
+- kind: Card
+  properties:
+  - name: owner
+  - name: source_author
+  - name: source
+  - name: tags
+  - name: rating
+    direction: desc
   - name: last_update_datetime
     direction: desc

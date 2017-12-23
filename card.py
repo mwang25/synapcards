@@ -42,6 +42,13 @@ class Card(ndb.Model):
         return a[0], int(a[1])
 
     @classmethod
+    def tags_list(cls, tags):
+        if not tags or len(tags) == 0:
+            return []
+        split = [t.strip() for t in tags.split(',')]
+        return filter(lambda t: len(t) > 0, split)
+
+    @classmethod
     def _get(cls, card_id):
         return ndb.Key(cls.KIND, card_id).get()
 
@@ -76,9 +83,6 @@ class Card(ndb.Model):
             msg = 'Cannot add card with existing card_id ({})'.format(card_id)
             raise CardError(msg)
 
-        if int(rating) < 1 or int(rating) > Constants.MAX_RATING:
-            raise CardError('invalid rating ({})'.format(rating))
-
         (user_id, _) = cls.split_card_id(card_id)
 
         Card(
@@ -90,8 +94,8 @@ class Card(ndb.Model):
             source=source,
             source_publish_datetime=publish_dt.datetime,
             source_publish_datetime_format=publish_dt.output_format,
-            tags=[t.strip() for t in tags.split(',')],
-            rating=int(rating),
+            tags=cls.tags_list(tags),
+            rating=rating,
             detailed_notes=detailed_notes,
             owner=user_id,
             max_rating=Constants.MAX_RATING,
@@ -118,9 +122,6 @@ class Card(ndb.Model):
         if not card:
             raise CardError('Does not exist')
 
-        if int(rating) < 1 or int(rating) > Constants.MAX_RATING:
-            raise CardError('invalid rating ({})'.format(rating))
-
         card.title = title
         card.title_url = title_url
         card.summary = summary
@@ -128,24 +129,17 @@ class Card(ndb.Model):
         card.source = source
         card.source_publish_datetime = publish_dt.datetime
         card.source_publish_datetime_format = publish_dt.output_format
-        card.tags = [t.strip() for t in tags.split(',')]
-        card.rating = int(rating)
+        card.tags = cls.tags_list(tags)
+        card.rating = rating
         card.detailed_notes = detailed_notes
         card.last_update_datetime = datetime.datetime.utcnow()
         card.put()
 
     @classmethod
     def delete(cls, card_id):
-        ndb.Key(cls.KIND, card_id).delete()
-
-    @classmethod
-    def delete_cards_by_user(cls, user_id):
-        """Delete all cards added by specified user"""
-        query = Card.query(Card.owner == user_id)
-        keys = query.fetch(options=ndb.QueryOptions(keys_only=True))
-        # According to docs, NDB will automatically collect multiple
-        # calls to reduce round trips to server.
-        [k.delete() for k in keys]
+        card = cls._get(card_id)
+        if card:
+            ndb.Key(cls.KIND, card_id).delete()
 
     @classmethod
     def latest_by_user(cls, user_id, count=3):
@@ -182,6 +176,48 @@ class Card(ndb.Model):
             return cls._fill_featured_values([cls._get(card_id)])
 
         return {'featured_cards_id': None}
+
+    @classmethod
+    def search(cls, args, keys_only=False):
+        query = Card.query()
+        if 'user_id' in args:
+            query = query.filter(Card.owner == args['user_id'])
+        if 'source_author' in args:
+            query = query.filter(Card.source_author == args['source_author'])
+        if 'source' in args:
+            query = query.filter(Card.source == args['source'])
+        if 'tags' in args:
+            query = query.filter(Card.tags.IN(args['tags']))
+        if 'rating' in args:
+            query = cls._rating_filter(query, args['rating'])
+        query = query.order(-Card.last_update_datetime)
+
+        if keys_only:
+            return query.fetch(keys_only=True)
+        else:
+            count = args.get('count', Constants.SEARCH_DEFAULT_COUNT)
+            return [cls._fill_dict(r) for r in query.fetch(count)]
+
+    @classmethod
+    def _rating_filter(cls, query, f):
+        if f == '5':
+            return query.filter(Card.rating == 5).order(-Card.rating)
+        if f == '4':
+            return query.filter(Card.rating == 4).order(-Card.rating)
+        if f == '4 or higher':
+            return query.filter(Card.rating >= 4).order(-Card.rating)
+        if f == '3':
+            return query.filter(Card.rating == 3).order(-Card.rating)
+        if f == '3 or higher':
+            return query.filter(Card.rating >= 3).order(-Card.rating)
+        if f == '2 or lower':
+            return query.filter(Card.rating <= 2).order(-Card.rating)
+        if f == '2':
+            return query.filter(Card.rating == 2).order(-Card.rating)
+        if f == '1':
+            return query.filter(Card.rating == 1).order(-Card.rating)
+
+        raise CardError('invalid rating filter ({})'.format(f))
 
     @classmethod
     def _fill_featured_values(cls, results):
@@ -251,7 +287,7 @@ class Card(ndb.Model):
             return title
 
     @classmethod
-    def _fill_dict(cls, card, truncate):
+    def _fill_dict(cls, card, truncate=False):
         try:
             return {
                 'card_id': card.key.string_id(),

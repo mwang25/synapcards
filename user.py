@@ -45,6 +45,11 @@ class User(ndb.Model):
         return result is not None
 
     @classmethod
+    def get_all(cls):
+        keys = User.query().fetch(keys_only=True)
+        return [k.id() for k in keys]
+
+    @classmethod
     def get(cls, user_id=None, firebase_id=None):
         if user_id is None and firebase_id is None:
             raise RuntimeError('must specify either user_id or firebase_id')

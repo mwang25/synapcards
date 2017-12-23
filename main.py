@@ -17,6 +17,7 @@ from card_ajax import CardAjax
 from card_handler import CardHandler
 from featured_cards_handler import FeaturedCardsHandler
 from index_handler import IndexHandler
+from search_handler import SearchHandler
 from signin_ajax import SigninAjax
 from signin_handler import SigninHandler
 from user_ajax import UserAjax
@@ -31,5 +32,6 @@ app = webapp2.WSGIApplication([
     ('/cardajax', CardAjax),
     ('/card/([\d\w_]+:\d+)', CardHandler),
     ('/featuredcards/([\d\w_]+:\d+)', FeaturedCardsHandler),
+    ('/search', SearchHandler),
     ('/(.*)', IndexHandler),
     ], debug=True)

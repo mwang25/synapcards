@@ -5,6 +5,12 @@ class Constants():
     MAX_CARDS_PER_USER = 100
     MAX_RATING = 5
     MAX_USERS = 20
+    SEARCH_DEFAULT_COUNT = 10
+    SEARCH_SUMMARIZE_THRESHOLD = 25
+    SEARCH_COUNTS = ['10', '25', '100', '250']
+    SEARCH_RATINGS = [
+        '', '5', '4', '4 or higher', '3', '3 or higher',
+        '2 or lower', '2', '1']
     SUPPORTED_TIMEZONES = [
         'US/Eastern',
         'US/Central',

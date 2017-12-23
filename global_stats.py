@@ -22,9 +22,9 @@ class GlobalStats(ndb.Model):
         result.put()
 
     @classmethod
-    def decr_cards(cls):
+    def decr_cards(cls, count=1):
         result = ndb.Key(cls.KIND, cls.CARDS).get()
-        result.count -= 1
+        result.count -= count
         result.put()
 
     @classmethod

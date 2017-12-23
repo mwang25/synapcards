@@ -1,8 +1,9 @@
-from global_stats import GlobalStats
 from card import Card
+from card_stats import CardStats
 from constants import Constants
-from user import User
+from global_stats import GlobalStats
 from publish_datetime import PublishDatetime
+from user import User
 
 
 class CardManagerError(RuntimeError):
@@ -22,9 +23,16 @@ class CardManager():
             raise CardManagerError('Card must have title')
 
     @classmethod
+    def _verify_values(cls, values):
+        rating = int(values['rating'])
+        if int(rating) < 1 or int(rating) > Constants.MAX_RATING:
+            raise CardManagerError('invalid rating ({})'.format(rating))
+
+    @classmethod
     def add(cls, user_id, values):
         cls._verify_user_id(user_id, values['user_id'])
         cls._verify_required_fields(values)
+        cls._verify_values(values)
 
         user_dict = User.get(user_id)
         if user_dict['total_cards'] >= user_dict['max_cards']:
@@ -34,6 +42,7 @@ class CardManager():
         if Constants.FEATURED_CARDS in values['tags']:
             values['title_url'] = '{}/featuredcards/{}'.format(
                 Constants.HOMEPAGE, card_id)
+
         Card.add(
             card_id,
             values['title'],
@@ -43,18 +52,25 @@ class CardManager():
             values['source'],
             PublishDatetime().parse_string(values['published']),
             values['tags'],
-            values['rating'],
+            int(values['rating']),
             values['detailed_notes'])
+
+        CardStats.incr_author(values['author'])
+        CardStats.incr_source(values['source'])
+        CardStats.incr_tags(values['tags'])
         User.incr_cards(user_id)
         GlobalStats.incr_cards()
+
         return Card.get(card_id)
 
     @classmethod
     def update(cls, user_id, values):
         cls._verify_user_id(user_id, values['user_id'])
         cls._verify_required_fields(values)
+        cls._verify_values(values)
 
         card_id = Card.make_card_id(user_id, values['card_num'])
+        orig = Card.get(card_id)
         Card.update(
             card_id,
             values['title'],
@@ -64,8 +80,13 @@ class CardManager():
             values['source'],
             PublishDatetime().parse_string(values['published']),
             values['tags'],
-            values['rating'],
+            int(values['rating']),
             values['detailed_notes'])
+
+        CardStats.diff_author(orig['author'], values['author'])
+        CardStats.diff_source(orig['source'], values['source'])
+        CardStats.diff_tags(orig['tags'], values['tags'])
+
         return Card.get(card_id)
 
     @classmethod
@@ -73,7 +94,11 @@ class CardManager():
         cls._verify_user_id(user_id, values['user_id'])
 
         card_id = Card.make_card_id(user_id, values['card_num'])
+        orig = Card.get(card_id)
         Card.delete(card_id)
+        CardStats.decr_author(orig['author'])
+        CardStats.decr_source(orig['source'])
+        CardStats.decr_tags(orig['tags'])
         User.decr_cards(user_id)
         GlobalStats.decr_cards()
 
