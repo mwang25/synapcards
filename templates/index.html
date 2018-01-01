@@ -93,7 +93,7 @@
       {% endfor %}
       <div class="row row-outer">
         <div class="col-xs-12">
-          <h2>Recently Added Top Rated Cards:</h2>
+          <h2>Latest Top Rated Cards:</h2>
         </div>
       </div>
       {% for c in cards %}
@@ -120,6 +120,14 @@
         </div>
       </div>
       {% endfor %}
+      <div class="row row-outer">
+        <div class="col-xs-12">
+          <b>Want more? </b><a href="{{ homepage }}/search?rating=5&count=25">
+             Click here to see the last 25 top rated cards</a>
+          <br>
+          <br>
+        </div>
+      </div>
       <div class="row row-outer">
         <div class="col-xs-12">
           <b>Total Cards:</b> {{ total_cards }}
