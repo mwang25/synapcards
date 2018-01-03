@@ -76,13 +76,13 @@ $(function(){
   }
 
   function parseQueryParams(qstr) {
-    var decoded = decodeURIComponent(qstr).replace(/\+/g, ' ');
-    console.log("decoded:" + decoded);
-    var arr = decoded.split("&");
+    console.log("qstr:" + qstr);
+    var arr = qstr.split("&");
     for (var i = 0; i < arr.length; i++) {
+        console.log(arr[i]);
         var p = arr[i].split("=");
-        queryParams[p[0]] = p[1];
-        console.log(p[0] + " = " + p[1]);
+        var val = decodeURIComponent(p[1].replace(/\+/g, ' '));
+        queryParams[p[0]] = val;
     }
   }
 
