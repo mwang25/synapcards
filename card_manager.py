@@ -3,6 +3,7 @@ from card_stats import CardStats
 from constants import Constants
 from global_stats import GlobalStats
 from publish_datetime import PublishDatetime
+from tag import Tag
 from user import User
 
 
@@ -28,6 +29,9 @@ class CardManager():
         if int(rating) < 1 or int(rating) > Constants.MAX_RATING:
             raise CardManagerError('invalid rating ({})'.format(rating))
 
+        for t in Tag.as_list(values['tags']):
+            Tag.validate(t)
+
     @classmethod
     def add(cls, user_id, values):
         cls._verify_user_id(user_id, values['user_id'])
@@ -51,7 +55,7 @@ class CardManager():
             values['author'],
             values['source'],
             PublishDatetime().parse_string(values['published']),
-            values['tags'],
+            Tag.as_list(values['tags']),
             int(values['rating']),
             values['detailed_notes'])
 
@@ -79,7 +83,7 @@ class CardManager():
             values['author'],
             values['source'],
             PublishDatetime().parse_string(values['published']),
-            values['tags'],
+            Tag.as_list(values['tags']),
             int(values['rating']),
             values['detailed_notes'])
 

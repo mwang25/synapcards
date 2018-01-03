@@ -1,6 +1,7 @@
 from google.appengine.ext import ndb
 
 from card import Card
+from tag import Tag
 
 
 class CardStats(ndb.Model):
@@ -29,7 +30,7 @@ class CardStats(ndb.Model):
     def _make_frozenset(cls, tags):
         if not tags or len(tags) == 0:
             return frozenset([])
-        return frozenset(Card.tags_list(tags))
+        return frozenset(Tag.as_list(tags))
 
     @classmethod
     def _incr(cls, key):
@@ -60,7 +61,7 @@ class CardStats(ndb.Model):
         if cls._empty_data(tags):
             return
 
-        for t in Card.tags_list(tags):
+        for t in Tag.as_list(tags):
             cls._incr(cls._make_key(cls.TAG_PARENT, t))
 
     @classmethod
@@ -93,7 +94,7 @@ class CardStats(ndb.Model):
         if cls._empty_data(tags):
             return
 
-        for t in Card.tags_list(tags):
+        for t in Tag.as_list(tags):
             cls._decr(cls._make_key(cls.TAG_PARENT, t))
 
     @classmethod

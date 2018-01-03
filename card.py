@@ -42,13 +42,6 @@ class Card(ndb.Model):
         return a[0], int(a[1])
 
     @classmethod
-    def tags_list(cls, tags):
-        if not tags or len(tags) == 0:
-            return []
-        split = [t.strip() for t in tags.split(',')]
-        return filter(lambda t: len(t) > 0, split)
-
-    @classmethod
     def _get(cls, card_id):
         return ndb.Key(cls.KIND, card_id).get()
 
@@ -94,7 +87,7 @@ class Card(ndb.Model):
             source=source,
             source_publish_datetime=publish_dt.datetime,
             source_publish_datetime_format=publish_dt.output_format,
-            tags=cls.tags_list(tags),
+            tags=tags,
             rating=rating,
             detailed_notes=detailed_notes,
             owner=user_id,
@@ -129,7 +122,7 @@ class Card(ndb.Model):
         card.source = source
         card.source_publish_datetime = publish_dt.datetime
         card.source_publish_datetime_format = publish_dt.output_format
-        card.tags = cls.tags_list(tags)
+        card.tags = tags
         card.rating = rating
         card.detailed_notes = detailed_notes
         card.last_update_datetime = datetime.datetime.utcnow()
