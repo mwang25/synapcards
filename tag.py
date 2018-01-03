@@ -9,9 +9,14 @@ class TagError(RuntimeError):
 class Tag:
     @classmethod
     def validate(cls, tag):
-        m = re.match(r'([a-zA-Z0-9]).*', tag)
-        if not m:
-            raise TagError('illegal first character in tag')
+        if not isinstance(tag, unicode):
+            raise TagError('tag must be unicode')
+
+        str = tag.encode('utf-8')
+        if ord(str[0]) < 0x80:
+            m = re.match(r'([a-zA-Z0-9]).*', tag)
+            if not m:
+                raise TagError('illegal first character in tag')
 
     @classmethod
     def as_list(cls, tags):
@@ -23,24 +28,24 @@ class Tag:
 
 
 def run_tests():
-    try:
-        tags = ['happy', 'Happy', '7 Habits of Happy', u'kai\u738b']
-        for t in tags:
+    tags = [u'happy', u'Happy', u'7 Habits', u'kai\u738b', u'\u738b\u732b']
+    for t in tags:
+        try:
             print 'validating tag:' + t
             Tag.validate(t)
             print 'PASS:' + t
-    except TagError as err:
-        print 'FAILED!!!! with ' + err.message
+        except TagError as err:
+            print 'FAILED!!!! with ' + err.message
 
-    try:
-        tags = [u'\u738bkai']
-        for t in tags:
+    tags = ['hi', u'_hi']
+    for t in tags:
+        try:
             print 'validating tag:' + t
             Tag.validate(t)
-            print 'FAILED!  unexpected exception ' + t
-    except TagError as err:
-        print 'PASS: got expected error on ' + t
-        print 'error message: ' + err.message
+            print 'FAILED!  did not get exception on ' + t
+        except TagError as err:
+            print 'PASS: got expected error on ' + t
+            print 'error message: ' + err.message
 
     tlist = Tag.as_list(None)
     if tlist == []:
