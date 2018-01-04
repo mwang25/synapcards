@@ -43,7 +43,7 @@ $(function(){
 
     // [START onAuthStateChanged]
     firebase.auth().onAuthStateChanged(function(user) {
-
+      console.log("onAuthStateChanged entered");
       parseQueryParams(window.location.search.substr(1));
       fillForm();
 
@@ -79,10 +79,12 @@ $(function(){
     console.log("qstr:" + qstr);
     var arr = qstr.split("&");
     for (var i = 0; i < arr.length; i++) {
-        console.log(arr[i]);
-        var p = arr[i].split("=");
-        var val = decodeURIComponent(p[1].replace(/\+/g, ' '));
-        queryParams[p[0]] = val;
+        console.log("arr: " + arr[i] + "len: " + arr[i].length);
+        if (/=/.test(arr[i])) {
+            var p = arr[i].split("=");
+            var val = decodeURIComponent(p[1].replace(/\+/g, ' '));
+            queryParams[p[0]] = val;
+        }
     }
   }
 
