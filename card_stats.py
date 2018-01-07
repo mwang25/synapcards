@@ -1,6 +1,5 @@
 from google.appengine.ext import ndb
 
-from card import Card
 from tag import Tag
 
 
@@ -123,11 +122,19 @@ class CardStats(ndb.Model):
             cls._decr(cls._make_key(cls.TAG_PARENT, t))
 
     @classmethod
-    def _get_all(cls, parent_key):
-        keys = CardStats.query(ancestor=parent_key).fetch(keys_only=True)
-        # I think key.id() is an array of bytes, so convert to utf-8 before
-        # sending it back to the caller.
-        return [k.id().decode('utf-8', 'replace') for k in keys]
+    def _key_to_unicode(cls, key):
+        """Given a utf-8 byte sequence, return unicode string"""
+        return key.decode('utf-8', 'replace')
+
+    @classmethod
+    def _get_all(cls, parent_key, keys_only=True):
+        items = CardStats.query(ancestor=parent_key).fetch(keys_only=keys_only)
+        # I think key.id() is an array of bytes encoded in utf-8.  Decode to
+        # unicode before returning to user.
+        if keys_only:
+            return [cls._key_to_unicode(i.id()) for i in items]
+        else:
+            return items
 
     @classmethod
     def get_all_authors(cls):
@@ -140,3 +147,9 @@ class CardStats(ndb.Model):
     @classmethod
     def get_all_tags(cls):
         return cls._get_all(cls._make_parent_key(cls.TAG_PARENT))
+
+    @classmethod
+    def get_all_tags_with_counts(cls):
+        parent_key = cls._make_parent_key(cls.TAG_PARENT)
+        tags = cls._get_all(parent_key, keys_only=False)
+        return [Tag(cls._key_to_unicode(t.key.id()), t.count) for t in tags]

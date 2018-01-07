@@ -1,3 +1,4 @@
+from operator import attrgetter
 import re
 
 
@@ -7,14 +8,22 @@ class TagError(RuntimeError):
 
 
 class Tag:
-    @classmethod
-    def validate(cls, tag):
-        if not isinstance(tag, unicode):
-            raise TagError('tag must be unicode')
+    def __init__(self, name, count=0):
+        Tag.validate(name)
+        self.name = name
+        self.count = count
 
-        str = tag.encode('utf-8')
+    def __unicode__(self):
+        return u'{} ({})'.format(self.name, self.count)
+
+    @classmethod
+    def validate(cls, name):
+        if not isinstance(name, unicode):
+            raise TagError('tag name must be unicode')
+
+        str = name.encode('utf-8')
         if ord(str[0]) < 0x80:
-            m = re.match(r'([a-zA-Z0-9]).*', tag)
+            m = re.match(r'([a-zA-Z0-9]).*', name)
             if not m:
                 raise TagError('illegal first character in tag')
 
@@ -70,6 +79,28 @@ def run_tests():
         print 'PASS: {}'.format(tlist)
     else:
         print 'FAILED!!! list'
+
+    t1 = Tag(u'hi')
+    print t1
+
+    t2 = Tag(u'hi', 3)
+    print t2
+
+    try:
+        t3 = Tag('hi', 5)
+        print t3
+    except TagError as err:
+        print 'PASS: got expected error on ascii hi'
+        print 'error message: ' + err.message
+
+    l = [Tag(u'hi', 30), Tag(u'bye', 1), Tag(u'sam', 10)]
+    print 'Sort list by name:'
+    l.sort(key=attrgetter('name'))
+    print u' '.join(unicode(t) for t in l)
+
+    print 'Sort list by count:'
+    l.sort(key=attrgetter('count'), reverse=True)
+    print u' '.join(unicode(t) for t in l)
 
 
 if __name__ == "__main__":

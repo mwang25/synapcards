@@ -20,6 +20,7 @@ from index_handler import IndexHandler
 from search_handler import SearchHandler
 from signin_ajax import SigninAjax
 from signin_handler import SigninHandler
+from tag_map_handler import TagMapHandler
 from user_ajax import UserAjax
 from user_handler import UserHandler
 
@@ -33,5 +34,6 @@ app = webapp2.WSGIApplication([
     ('/card/([\d\w_]+:\d+)', CardHandler),
     ('/featuredcards/([\d\w_]+:\d+)', FeaturedCardsHandler),
     ('/search', SearchHandler),
+    ('/tagmap', TagMapHandler),
     ('/(.*)', IndexHandler),
     ], debug=True)
