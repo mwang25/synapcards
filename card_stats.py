@@ -1,5 +1,6 @@
 from google.appengine.ext import ndb
 
+from card_node import CardNode
 from tag import Tag
 
 
@@ -11,12 +12,6 @@ class CardStats(ndb.Model):
     count = ndb.IntegerProperty()
 
     @classmethod
-    def _empty_data(cls, data):
-        if not data or len(data) == 0:
-            return True
-        return False
-
-    @classmethod
     def _make_key(cls, parent, data):
         seq = list(parent) + [cls.KIND, data]
         return ndb.Key(flat=seq)
@@ -24,12 +19,6 @@ class CardStats(ndb.Model):
     @classmethod
     def _make_parent_key(cls, parent):
         return ndb.Key(flat=list(parent))
-
-    @classmethod
-    def _make_frozenset(cls, tags):
-        if not tags or len(tags) == 0:
-            return frozenset([])
-        return frozenset(Tag.as_list(tags))
 
     @classmethod
     def _incr(cls, key):
@@ -40,28 +29,6 @@ class CardStats(ndb.Model):
             result.put()
         else:
             CardStats(key=key, count=1).put()
-
-    @classmethod
-    def incr_author(cls, author):
-        if cls._empty_data(author):
-            return
-
-        cls._incr(cls._make_key(cls.AUTHOR_PARENT, author))
-
-    @classmethod
-    def incr_source(cls, source):
-        if cls._empty_data(source):
-            return
-
-        cls._incr(cls._make_key(cls.SOURCE_PARENT, source))
-
-    @classmethod
-    def incr_tags(cls, tags):
-        if cls._empty_data(tags):
-            return
-
-        for t in Tag.as_list(tags):
-            cls._incr(cls._make_key(cls.TAG_PARENT, t))
 
     @classmethod
     def _decr(cls, key):
@@ -75,37 +42,40 @@ class CardStats(ndb.Model):
                 result.put()
 
     @classmethod
-    def decr_author(cls, author):
-        if cls._empty_data(author):
-            return
+    def _diff(cls, parent, orig, new):
+        orig_set = frozenset(CardNode.as_list(orig))
+        new_set = frozenset(CardNode.as_list(new))
+        for s in new_set - orig_set:
+            cls._incr(cls._make_key(parent, s))
+        for s in orig_set - new_set:
+            cls._decr(cls._make_key(parent, s))
 
-        cls._decr(cls._make_key(cls.AUTHOR_PARENT, author))
+    @classmethod
+    def incr_authors(cls, authors):
+        cls._diff(cls.AUTHOR_PARENT, None, authors)
+
+    @classmethod
+    def incr_source(cls, source):
+        cls._diff(cls.SOURCE_PARENT, None, source)
+
+    @classmethod
+    def incr_tags(cls, tags):
+        cls._diff(cls.TAG_PARENT, None, tags)
+
+    @classmethod
+    def decr_authors(cls, authors):
+        cls._diff(cls.AUTHOR_PARENT, authors, None)
 
     @classmethod
     def decr_source(cls, source):
-        if cls._empty_data(source):
-            return
-
-        cls._decr(cls._make_key(cls.SOURCE_PARENT, source))
+        cls._diff(cls.SOURCE_PARENT, source, None)
 
     @classmethod
     def decr_tags(cls, tags):
-        if cls._empty_data(tags):
-            return
-
-        for t in Tag.as_list(tags):
-            cls._decr(cls._make_key(cls.TAG_PARENT, t))
+        cls._diff(cls.TAG_PARENT, tags, None)
 
     @classmethod
-    def _diff(cls, parent, orig, new):
-        if orig != new:
-            if len(orig):
-                cls._decr(cls._make_key(parent, orig))
-            if len(new):
-                cls._incr(cls._make_key(parent, new))
-
-    @classmethod
-    def diff_author(cls, orig, new):
+    def diff_authors(cls, orig, new):
         cls._diff(cls.AUTHOR_PARENT, orig, new)
 
     @classmethod
@@ -114,12 +84,7 @@ class CardStats(ndb.Model):
 
     @classmethod
     def diff_tags(cls, orig, new):
-        orig_set = cls._make_frozenset(orig)
-        new_set = cls._make_frozenset(new)
-        for t in new_set - orig_set:
-            cls._incr(cls._make_key(cls.TAG_PARENT, t))
-        for t in orig_set - new_set:
-            cls._decr(cls._make_key(cls.TAG_PARENT, t))
+        cls._diff(cls.TAG_PARENT, orig, new)
 
     @classmethod
     def _key_to_unicode(cls, key):

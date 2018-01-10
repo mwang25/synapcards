@@ -114,7 +114,7 @@ $(function(){
     document.getElementById("title-textarea").value = cardData.title;
     document.getElementById("title-url-textarea").value = cardData.title_url;
     document.getElementById("summary-textarea").value = cardData.summary;
-    document.getElementById("author-textarea").value = cardData.author;
+    document.getElementById("authors-textarea").value = cardData.authors;
     document.getElementById("source-textarea").value = cardData.source;
     document.getElementById("published-textarea").value = cardData.published;
     document.getElementById("tags-textarea").value = cardData.tags;
@@ -133,7 +133,7 @@ $(function(){
     document.getElementById("title-textarea").value = "";
     document.getElementById("title-url-textarea").value = "";
     document.getElementById("summary-textarea").value = "";
-    document.getElementById("author-textarea").value = "";
+    document.getElementById("authors-textarea").value = "";
     document.getElementById("source-textarea").value = "";
     document.getElementById("published-textarea").value = "";
     document.getElementById("tags-textarea").value = "";
@@ -146,7 +146,7 @@ $(function(){
     $('#dynamic-title').text(cardData.title);
     $('#dynamic-title-html').html(cardData.title_html);
     $('#dynamic-summary').text(cardData.summary);
-    $('#dynamic-author').text(cardData.author);
+    $('#dynamic-authors').text(cardData.authors);
     $('#dynamic-source').text(cardData.source);
     $('#dynamic-published').text(cardData.published);
     $('#dynamic-tags').text(cardData.tags);
@@ -233,7 +233,7 @@ $(function(){
     var title = $('#title-textarea').val();
     var titleUrl = $('#title-url-textarea').val();
     var summary = $('#summary-textarea').val();
-    var author = $('#author-textarea').val();
+    var authors = $('#authors-textarea').val();
     var source = $('#source-textarea').val();
     var published = $('#published-textarea').val();
     var tags = $('#tags-textarea').val();
@@ -256,7 +256,7 @@ $(function(){
         'title': title,
         'title_url': titleUrl,
         'summary': summary,
-        'author': author,
+        'authors': authors,
         'source': source,
         'published': published,
         'tags': tags,

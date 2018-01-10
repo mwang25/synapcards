@@ -65,7 +65,7 @@
           <h3>{{ card.title_html }}</h3>
           <p>{{ card.summary }}</p>
           <p>
-            <b>Author:</b> {{ card.author }}<br>
+            <b>Authors:</b> {{ card.authors }}<br>
             <b>Source:</b> {{ card.source }}<br>
             <b>Published:</b> {{ card.published }}<br>
             <b>Tags:</b> {{ card.tags }}<br>
@@ -87,7 +87,7 @@
           <h3><span id="dynamic-title-html"></h3>
           <p><span id="dynamic-summary"></span></p>
           <p>
-            <b>Author:</b> <span id="dynamic-author"></span><br>
+            <b>Authors:</b> <span id="dynamic-authors"></span><br>
             <b>Source:</b> <span id="dynamic-source"></span><br>
             <b>Published:</b> <span id="dynamic-published"></span><br>
             <b>Tags:</b> <span id="dynamic-tags"></span><br>
@@ -136,9 +136,14 @@
             </div>
           </div>
           <div class="row row-outer">
-            <div class="col-xs-3">Author:</div>
+            <div class="col-xs-3">Authors:</div>
             <div class="col-xs-8">
-              <textarea class="textarea" rows=1 id="author-textarea"></textarea>
+              <textarea class="textarea" rows=1 id="authors-textarea"></textarea>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-12">
+              <p>You can enter multiple authors, separated by commas.</p>
             </div>
           </div>
           <div class="row row-outer">

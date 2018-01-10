@@ -19,7 +19,9 @@ class Card(ndb.Model):
     title = ndb.StringProperty()
     title_url = ndb.StringProperty()
     source = ndb.StringProperty()
+    # source_author is deprecated.  Use source_authors instead.
     source_author = ndb.StringProperty()
+    source_authors = ndb.StringProperty(repeated=True)
     # StringProperty has limit of 1500 chars, text is unlimited.
     summary = ndb.TextProperty()
     detailed_notes = ndb.TextProperty()
@@ -65,7 +67,7 @@ class Card(ndb.Model):
         title,
         title_url,
         summary,
-        author,
+        authors,
         source,
         publish_dt,
         tags,
@@ -83,7 +85,7 @@ class Card(ndb.Model):
             title=title,
             title_url=title_url,
             summary=summary,
-            source_author=author,
+            source_authors=authors,
             source=source,
             source_publish_datetime=publish_dt.datetime,
             source_publish_datetime_format=publish_dt.output_format,
@@ -104,7 +106,7 @@ class Card(ndb.Model):
         title,
         title_url,
         summary,
-        author,
+        authors,
         source,
         publish_dt,
         tags,
@@ -118,7 +120,7 @@ class Card(ndb.Model):
         card.title = title
         card.title_url = title_url
         card.summary = summary
-        card.source_author = author
+        card.source_authors = authors
         card.source = source
         card.source_publish_datetime = publish_dt.datetime
         card.source_publish_datetime_format = publish_dt.output_format
@@ -281,14 +283,19 @@ class Card(ndb.Model):
     @classmethod
     def _fill_dict(cls, card, truncate=False):
         try:
+            authors = []
+            if card.source_author:
+                authors += [card.source_author]
+            if card.source_authors:
+                authors += card.source_authors
             return {
                 'card_id': card.key.string_id(),
-                'author': card.source_author,
+                'authors': u', '.join(authors),
                 'source': card.source,
                 'published': str(PublishDatetime(
                     card.source_publish_datetime,
                     card.source_publish_datetime_format)),
-                'tags': ', '.join(card.tags),
+                'tags': u', '.join(card.tags),
                 'rating': card.rating,
                 'max_rating': card.max_rating,
                 'title': card.title,

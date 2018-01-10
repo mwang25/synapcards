@@ -39,7 +39,7 @@ class SearchManager():
         line = u'({}/{}) {} [{}] {}'.format(
             card['rating'],
             Constants.MAX_RATING,
-            card['author'],
+            card['authors'],
             card['source'],
             card['title'])
         return {

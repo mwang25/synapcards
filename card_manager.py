@@ -1,4 +1,6 @@
+from author_node import AuthorNode
 from card import Card
+from card_node import CardNode
 from card_stats import CardStats
 from constants import Constants
 from global_stats import GlobalStats
@@ -32,6 +34,10 @@ class CardManager():
         for t in Tag.as_list(values['tags']):
             Tag.validate(t)
 
+        for a in CardNode.as_list(values['authors']):
+            # create object to validate
+            AuthorNode(a, 0)
+
     @classmethod
     def add(cls, user_id, values):
         cls._verify_user_id(user_id, values['user_id'])
@@ -52,14 +58,14 @@ class CardManager():
             values['title'],
             values['title_url'],
             values['summary'],
-            values['author'],
+            CardNode.as_list(values['authors']),
             values['source'],
             PublishDatetime().parse_string(values['published']),
             Tag.as_list(values['tags']),
             int(values['rating']),
             values['detailed_notes'])
 
-        CardStats.incr_author(values['author'])
+        CardStats.incr_authors(values['authors'])
         CardStats.incr_source(values['source'])
         CardStats.incr_tags(values['tags'])
         User.incr_cards(user_id)
@@ -80,14 +86,14 @@ class CardManager():
             values['title'],
             values['title_url'],
             values['summary'],
-            values['author'],
+            CardNode.as_list(values['authors']),
             values['source'],
             PublishDatetime().parse_string(values['published']),
             Tag.as_list(values['tags']),
             int(values['rating']),
             values['detailed_notes'])
 
-        CardStats.diff_author(orig['author'], values['author'])
+        CardStats.diff_authors(orig['authors'], values['authors'])
         CardStats.diff_source(orig['source'], values['source'])
         CardStats.diff_tags(orig['tags'], values['tags'])
 
@@ -100,7 +106,7 @@ class CardManager():
         card_id = Card.make_card_id(user_id, values['card_num'])
         orig = Card.get(card_id)
         Card.delete(card_id)
-        CardStats.decr_author(orig['author'])
+        CardStats.decr_authors(orig['authors'])
         CardStats.decr_source(orig['source'])
         CardStats.decr_tags(orig['tags'])
         User.decr_cards(user_id)
