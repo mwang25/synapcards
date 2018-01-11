@@ -178,7 +178,8 @@ class Card(ndb.Model):
         if 'user_id' in args:
             query = query.filter(Card.owner == args['user_id'])
         if 'source_author' in args:
-            query = query.filter(Card.source_author == args['source_author'])
+            query = query.filter(
+                Card.source_authors.IN([args['source_author']]))
         if 'source' in args:
             query = query.filter(Card.source == args['source'])
         if 'tags' in args:
@@ -283,14 +284,9 @@ class Card(ndb.Model):
     @classmethod
     def _fill_dict(cls, card, truncate=False):
         try:
-            authors = []
-            if card.source_author:
-                authors += [card.source_author]
-            if card.source_authors:
-                authors += card.source_authors
             return {
                 'card_id': card.key.string_id(),
-                'authors': u', '.join(authors),
+                'authors': u', '.join(card.source_authors),
                 'source': card.source,
                 'published': str(PublishDatetime(
                     card.source_publish_datetime,
