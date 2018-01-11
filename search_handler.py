@@ -49,4 +49,8 @@ class SearchHandler(webapp2.RequestHandler):
         if len(self.request.get('count')) > 0:
             args['count'] = int(self.request.get('count'))
 
+        # request special operation
+        if len(self.request.get('spec_op')) > 0:
+            args['spec_op'] = self.request.get('spec_op').lower() == 'true'
+
         return args
