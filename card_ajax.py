@@ -3,8 +3,8 @@ from user import User
 from card import CardError
 from card_manager import CardManager
 from card_manager import CardManagerError
+from card_node import CardNodeError
 from publish_datetime import PublishDatetimeError
-from tag import TagError
 
 
 class CardAjax(AjaxHandler):
@@ -36,8 +36,8 @@ class CardAjax(AjaxHandler):
             except (
                     CardError,
                     CardManagerError,
-                    PublishDatetimeError,
-                    TagError
+                    CardNodeError,
+                    PublishDatetimeError
                     ) as err:
                 card_dict['error_message'] = err.message
             except Exception as e:

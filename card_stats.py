@@ -1,7 +1,7 @@
 from google.appengine.ext import ndb
 
 from card_node import CardNode
-from tag import Tag
+from tag_node import TagNode
 
 
 class CardStats(ndb.Model):
@@ -117,4 +117,5 @@ class CardStats(ndb.Model):
     def get_all_tags_with_counts(cls):
         parent_key = cls._make_parent_key(cls.TAG_PARENT)
         tags = cls._get_all(parent_key, keys_only=False)
-        return [Tag(cls._key_to_unicode(t.key.id()), t.count) for t in tags]
+        return [
+            TagNode(cls._key_to_unicode(t.key.id()), t.count) for t in tags]

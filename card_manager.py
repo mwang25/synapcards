@@ -5,7 +5,7 @@ from card_stats import CardStats
 from constants import Constants
 from global_stats import GlobalStats
 from publish_datetime import PublishDatetime
-from tag import Tag
+from tag_node import TagNode
 from user import User
 
 
@@ -31,12 +31,9 @@ class CardManager():
         if int(rating) < 1 or int(rating) > Constants.MAX_RATING:
             raise CardManagerError('invalid rating ({})'.format(rating))
 
-        for t in Tag.as_list(values['tags']):
-            Tag.validate(t)
-
-        for a in CardNode.as_list(values['authors']):
-            # create object to validate
-            AuthorNode(a, 0)
+        # create Tag and Author objects just to validate them
+        [TagNode(t, 0) for t in CardNode.as_list(values['tags'])]
+        [AuthorNode(t, 0) for a in CardNode.as_list(values['authors'])]
 
     @classmethod
     def add(cls, user_id, values):
@@ -61,7 +58,7 @@ class CardManager():
             CardNode.as_list(values['authors']),
             values['source'],
             PublishDatetime().parse_string(values['published']),
-            Tag.as_list(values['tags']),
+            CardNode.as_list(values['tags']),
             int(values['rating']),
             values['detailed_notes'])
 
@@ -89,7 +86,7 @@ class CardManager():
             CardNode.as_list(values['authors']),
             values['source'],
             PublishDatetime().parse_string(values['published']),
-            Tag.as_list(values['tags']),
+            CardNode.as_list(values['tags']),
             int(values['rating']),
             values['detailed_notes'])
 
