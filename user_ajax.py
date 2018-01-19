@@ -8,7 +8,7 @@ from user_id import BadUserIdError
 class UserAjax(AjaxHandler):
     def post(self):
         (firebase_id, email) = self.get_firebase_info()
-        if firebase_id is not None:
+        if firebase_id:
             user_info = User.get(firebase_id=firebase_id)
             user_id = user_info['user_id']
             post_data = self.get_post_data()
@@ -16,9 +16,9 @@ class UserAjax(AjaxHandler):
 
             try:
                 if action == 'edit':
-                    user_info = UserManager.update(user_id, post_data)
+                    user_info = UserManager().update(user_id, post_data)
                 elif action == 'delete':
-                    user_info = UserManager.delete(user_id)
+                    user_info = UserManager().delete(user_id)
                 else:
                     msg = 'invalid action ' + action
                     user_info = {'error_message': msg}

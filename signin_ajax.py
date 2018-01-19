@@ -8,16 +8,16 @@ from user_id import BadUserIdError
 class SigninAjax(AjaxHandler):
     def get(self):
         (firebase_id, email) = self.get_firebase_info()
-        if firebase_id is not None:
-            user_info = User.get(firebase_id=firebase_id)
-            # If no record of this synapcard user, add new account
-            if user_info is None:
-                try:
-                    user_info = UserManager.add(firebase_id, email)
-                except (UserManagerError, BadUserIdError) as err:
-                    user_info = {'error_message': err.message}
-                except Exception as e:
-                    msg = str(type(e)) + ':' + ''.join(e.args)
-                    user_info = {'error_message': msg}
+        if firebase_id:
+            try:
+                user_id = UserManager().get_with_add_option(firebase_id, email)
+                user_info = User.get(user_id)
+            except (UserManagerError, BadUserIdError) as err:
+                user_info = {'error_message': err.message}
+            except Exception as e:
+                msg = str(type(e)) + ':' + ''.join(e.args)
+                user_info = {'error_message': msg}
+        else:
+            user_info = {'error_message': 'internal error: no firebase_id'}
 
         self.write_response(user_info)

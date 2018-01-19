@@ -1,5 +1,11 @@
 indexes:
 
+- kind: User
+  ancestor: yes
+  properties:
+  - name: total_cards
+    direction: desc
+
 - kind: Card
   properties:
   - name: owner
