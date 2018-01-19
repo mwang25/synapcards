@@ -46,6 +46,8 @@ class CardManager():
             raise CardManagerError('User max card limit reached')
 
         card_id = Card.make_card_id(user_id, user_dict['next_card_num'])
+        User.incr_next_card_num(user_id)
+
         if Constants.FEATURED_CARDS in values['tags']:
             values['title_url'] = '{}/featuredcards/{}'.format(
                 Constants.HOMEPAGE, card_id)

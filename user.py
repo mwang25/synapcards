@@ -106,10 +106,15 @@ class User(ndb.Model):
         return cls.get(new_user_id)
 
     @classmethod
+    def incr_next_card_num(cls, user_id):
+        user = cls._query_user_id(user_id)
+        user.next_card_num += 1
+        user.put()
+
+    @classmethod
     def incr_cards(cls, user_id):
         user = cls._query_user_id(user_id)
         user.total_cards += 1
-        user.next_card_num += 1
         user.put()
 
     @classmethod
