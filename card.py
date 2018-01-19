@@ -177,9 +177,9 @@ class Card(ndb.Model):
         query = Card.query()
         if 'user_id' in args:
             query = query.filter(Card.owner == args['user_id'])
-        if 'source_author' in args:
+        if 'author' in args:
             query = query.filter(
-                Card.source_authors.IN([args['source_author']]))
+                Card.source_authors.IN([args['author']]))
         if 'source' in args:
             query = query.filter(Card.source == args['source'])
         if 'tags' in args:
@@ -191,7 +191,7 @@ class Card(ndb.Model):
         if keys_only:
             return query.fetch(keys_only=True)
         else:
-            count = args.get('count', Constants.SEARCH_DEFAULT_COUNT)
+            count = int(args.get('count', Constants.SEARCH_DEFAULT_COUNT))
             return [cls._fill_dict(r) for r in query.fetch(count)]
 
     @classmethod

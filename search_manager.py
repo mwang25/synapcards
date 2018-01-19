@@ -18,6 +18,9 @@ class SearchManager():
         if args.get('new_search', False):
             return values
 
+        # hook for triggering some special operation
+        # if args['spec_op'].lower() == 'true':
+
         # First get total cards that matches filter
         total = len(Card.search(args, keys_only=True))
         if total == 0:

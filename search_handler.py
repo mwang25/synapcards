@@ -29,28 +29,21 @@ class SearchHandler(webapp2.RequestHandler):
             args['new_search'] = True
             return args
 
-        if len(self.request.get('user_id')) > 0:
-            args['user_id'] = self.request.get('user_id')
-
-        if len(self.request.get('author')) > 0:
-            args['source_author'] = self.request.get('author')
-
-        if len(self.request.get('source')) > 0:
-            args['source'] = self.request.get('source')
-
         if len(self.request.get('tags')) > 0:
             tags = self.request.get('tags').split(',')
             args['tags'] = [t.strip() for t in tags]
 
-        # args['rating'] = '4 or higher'
-        if len(self.request.get('rating')) > 0:
-            args['rating'] = self.request.get('rating')
-
-        if len(self.request.get('count')) > 0:
-            args['count'] = int(self.request.get('count'))
-
-        # request special operation
-        if len(self.request.get('spec_op')) > 0:
-            args['spec_op'] = self.request.get('spec_op').lower() == 'true'
+        # All string params are handled the same way
+        params = [
+            'user_id',
+            'author',
+            'source',
+            'rating',
+            'count',
+            'spec_op',
+        ]
+        for p in params:
+            if len(self.request.get(p)) > 0:
+                args[p] = self.request.get(p)
 
         return args
