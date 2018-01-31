@@ -23,11 +23,14 @@ class AjaxHandler(webapp2.RequestHandler):
 
     def get_firebase_info(self):
         if 'Authorization' in self.request.headers:
-            id_token = self.request.headers['Authorization'].split(' ').pop()
-            claims = google.oauth2.id_token.verify_firebase_token(
-                id_token, HTTP_REQUEST)
-            if claims:
-                return claims['sub'], claims['email']
+            try:
+                token = self.request.headers['Authorization'].split(' ').pop()
+                claims = google.oauth2.id_token.verify_firebase_token(
+                    token, HTTP_REQUEST)
+                if claims:
+                    return claims['sub'], claims['email']
+            except:
+                pass
 
         return None, None
 
