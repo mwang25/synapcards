@@ -5,6 +5,7 @@ class Constants():
     MAX_CARDS_PER_USER = 100
     MAX_RATING = 5
     MAX_USERS = 20
+    PROJECT_ID = 'synapcards-178123'
     SEARCH_DEFAULT_COUNT = 10
     SEARCH_SUMMARIZE_THRESHOLD = 25
     SEARCH_COUNTS = ['10', '25', '100', '250']

@@ -1,0 +1,8 @@
+cron:
+- description: daily job
+  url: /cron
+  timezone: UTC
+  schedule: every day 01:00
+  retry_parameters:
+    min_backoff_seconds: 10
+    max_doublings: 3
