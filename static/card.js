@@ -36,6 +36,8 @@ $(function(){
   var cardNum = null;
   // Signed in user data stored across functions.
   var cardData = null;
+  // Params from the query portion of the URL
+  var queryParams = {'op': 'default'};
 
   // Firebase log-in
   function configureFirebaseLogin() {
@@ -45,9 +47,11 @@ $(function(){
     // [START onAuthStateChanged]
     firebase.auth().onAuthStateChanged(function(user) {
       // first pop gives userId:num, split again to find userId and cardNum
-      cardId = window.location.href.split("/").pop();
+      cardId = window.location.pathname.split("/").pop();
+      console.log("initial card id: " + cardId);
       userId = cardId.split(":")[0];
       cardNum = cardId.split(":")[1];
+      parseQueryParams(window.location.search.substr(1));
       if (user) {
         user.getToken().then(function(idToken) {
           userIdToken = idToken;
@@ -80,6 +84,10 @@ $(function(){
               $('#static-card-section').hide();
               if (cardNum == 0) {
                 showForm();
+              } else if (queryParams['op'] == 'edit') {
+                console.log("edit card");
+                fillForm();
+                showForm();
               } else {
                 console.log("fill dynamic card");
                 fillDynamicCard();
@@ -101,6 +109,20 @@ $(function(){
         $('#buttons-section').hide();
       }
     });
+  }
+
+  function parseQueryParams(qstr) {
+    console.log("qstr:" + qstr);
+    var arr = qstr.split("&");
+    for (var i = 0; i < arr.length; i++) {
+        console.log("arr: " + arr[i]);
+        if (/=/.test(arr[i])) {
+            var p = arr[i].split("=");
+            var val = decodeURIComponent(p[1].replace(/\+/g, ' '));
+            console.log(p[0] + " = " + val);
+            queryParams[p[0]] = val;
+        }
+    }
   }
 
   function showForm() {
@@ -203,16 +225,17 @@ $(function(){
   var addBtn =$('#add-button');
   addBtn.click(function(event) {
     event.preventDefault();
-    cardNum = '0';
-    clearForm();
-    showForm();
+    url = backendHostUrl + '/card/' + userId + ':0';
+    console.log("new card op redirect to: " + url);
+    window.location.href=url;
   });
 
   var editBtn =$('#edit-button');
   editBtn.click(function(event) {
     event.preventDefault();
-    fillForm();
-    showForm();
+    url = backendHostUrl + '/card/' + userId + ':' + cardNum + '?op=edit';
+    console.log("edit card redirect to: " + url);
+    window.location.href=url;
   });
 
   var cancelBtn =$('#cancel-button');
@@ -270,16 +293,11 @@ $(function(){
         console.log("error detected: " + data.error_message)
         $('#form-error-message').text(data.error_message);
       } else {
-        console.log("post success (len good), go to dynamic data");
-        cardData = data;
-        // When saving a new card, update cardNum to value assigned by backend.
+        console.log("card saved");
         cardNum = data.card_id.split(":")[1];
-        console.log("returned cardNum: " + cardNum)
-        fillDynamicCard();
-        $('#static-card-section').hide();
-        $('#dynamic-card-section').show();
-        $('#form-section').hide();
-        $('#buttons-section').show();
+        url = backendHostUrl + '/card/' + userId + ':' + cardNum;
+        console.log("post save redirect: " + url);
+        window.location.href=url;
       }
     });
   });
