@@ -192,7 +192,7 @@ class Card(ndb.Model):
             return query.fetch(keys_only=True)
         else:
             count = int(args.get('count', Constants.SEARCH_DEFAULT_COUNT))
-            return [cls._fill_dict(r) for r in query.fetch(count)]
+            return [cls._fill_dict(c, True) for c in query.fetch(count)]
 
     @classmethod
     def _rating_filter(cls, query, f):
