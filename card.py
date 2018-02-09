@@ -186,6 +186,12 @@ class Card(ndb.Model):
             query = query.filter(Card.tags.IN(args['tags']))
         if 'rating' in args:
             query = cls._rating_filter(query, args['rating'])
+        if 'min_update_datetime' in args:
+            query = query.filter(
+                Card.last_update_datetime >= args['min_update_datetime'])
+        if 'max_update_datetime' in args:
+            query = query.filter(
+                Card.last_update_datetime < args['max_update_datetime'])
         query = query.order(-Card.last_update_datetime)
 
         if keys_only:
@@ -291,6 +297,8 @@ class Card(ndb.Model):
                 'published': str(PublishDatetime(
                     card.source_publish_datetime,
                     card.source_publish_datetime_format)),
+                'created': str(PublishDatetime(
+                    card.creation_datetime, '%m/%d/%Y')),
                 'tags': u', '.join(card.tags),
                 'rating': card.rating,
                 'max_rating': card.max_rating,
