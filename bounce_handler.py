@@ -16,6 +16,9 @@ import logging
 from google.appengine.ext.webapp.mail_handlers import BounceNotificationHandler
 import webapp2
 
+from email_status import EmailStatus
+from user_manager import UserManager
+
 
 class BounceHandler(BounceNotificationHandler):
     def receive(self, bounce_message):
@@ -25,6 +28,8 @@ class BounceHandler(BounceNotificationHandler):
         # bad dest address is in the to field, looks like mwangxyz@gmail.com
         logging.info('Bounce to: %s', bounce_message.original['to'])
         # logging.info('Bounce notification: %s', bounce_message.notification)
+        UserManager().update_email_freq_status(
+            bounce_message.original['to'], status=EmailStatus.BOUNCED.name)
 
 
 app = webapp2.WSGIApplication([BounceHandler.mapping()], debug=True)

@@ -4,6 +4,7 @@ from google.appengine.api import mail
 
 from card import Card
 from constants import Constants
+from user import User
 
 
 class CronManagerError(RuntimeError):
@@ -40,23 +41,65 @@ class CronManager():
 
         return plain_new, plain_updated, html_new, html_updated
 
-    def _build_bodies(self):
-        args = {'user_id': 'mwang25', 'count': 100}
+    def _get_followed_users(self, user_ids):
+        """Return list of users follwed by the given user_ids"""
+        followed = []
+        for user_id in user_ids:
+            user = User.get(user_id)
+            followed += User.split_strip(user['following'])
 
-        now = datetime.datetime.utcnow()
-        today = datetime.datetime(now.year, now.month, now.day)
-        args['min_update_datetime'] = today - datetime.timedelta(days=1)
-        args['max_update_datetime'] = today
-        cards = Card.search(args)
+        # There might be duplicate user_ids in the list, so remove duplicates.
+        return list(set(followed))
 
+    def _fill_users(self, user_ids, min_update_dt, max_update_dt):
+        """Return dict of user_id : list of updated cards"""
+        d = {}
+        args = {
+            'count': 100,
+            'min_update_datetime': min_update_dt,
+            'max_update_datetime': max_update_dt}
+        for user_id in user_ids:
+            args['user_id'] = user_id
+            d[user_id] = Card.search(args)
+        return d
+
+    def _build_bodies(
+            self, following, card_dict, min_update_dt, max_update_dt):
+        unsubscribe = u'To unsubscribe, simply reply to this email.'
+
+        # User enabled updates but is not following anyone
+        if len(following) == 0:
+            follow_instructions = u"""Currently, you are not following any users.
+                After you start following some Synapcards users, this email
+                will contain a list of newly added or updated cards by the
+                users you follow."""
+            plain = follow_instructions
+            plain += u'\n\n'
+            plain += unsubscribe
+
+            html = u'<html><head></head><body>'
+            html += follow_instructions
+            html += u'<br><br>'
+            html += unsubscribe
+            html += u'</body></html>'
+            return plain, html
+
+        cards = []
+        # convert multiple users separated by comma into a list
+        for u in User.split_strip(following):
+            cards += card_dict[u]
         (plain_new, plain_upd, html_new, html_upd) = self._split_and_format(
-            cards, args['min_update_datetime'], args['max_update_datetime'])
+            cards, min_update_dt, max_update_dt)
         num_new = len(plain_new)
         num_upd = len(plain_upd)
 
-        first_line = u'The users you followed have updates\n'
-        unsubscribe = u'To unsubscribe, simply reply to this email.'
+        first_line = u'You are following: {}'.format(following)
+        second_line = u'There are {} new and updated cards.'.format(
+            len(cards))
+
         plain = first_line
+        plain += u'\n'
+        plain = second_line
         plain += u'\n'
         if num_new:
             plain += u'New cards ({}):\n'.format(num_new)
@@ -68,10 +111,11 @@ class CronManager():
                 plain += c
         plain += u'\n'
         plain += unsubscribe
-        plain += u'\n'
 
         html = u'<html><head></head><body>'
         html += first_line
+        html += u'<br>'
+        html += second_line
         html += u'<br>'
         if num_new:
             html += u'<b>New cards ({}):</b><br>'.format(num_new)
@@ -81,26 +125,39 @@ class CronManager():
             html += u'<b>Updated cards ({}):</b><br>'.format(num_upd)
             for c in html_upd:
                 html += c
-        html += unsubscribe
         html += u'<br>'
+        html += unsubscribe
         html += u'</body></html>'
+
         return plain, html
 
     def _send_email(self):
-        # Original code creates a sender of
-        # fireproto-5c009@appspot.gserviceaccount.com
-        # But GCP console will not accept that as a sender.
-        # sender = '{}@appspot.gserviceaccount.com'.format(
-        #    app_identity.get_application_id())
-        sender = 'synapcards@gmail.com'
-        message = mail.EmailMessage(
-            sender=sender,
-            subject="Your daily update from synapcards.com")
+        now = datetime.datetime.utcnow()
+        today = datetime.datetime(now.year, now.month, now.day)
+        max_update_dt = today
 
-        message.to = "mwang25@gmail.com"
-        message.reply_to = 'unsubscribe@{}.appspotmail.com'.format(
-            Constants.PROJECT_ID)
-        (plain, html) = self._build_bodies()
-        message.body = plain
-        message.html = html
-        message.send()
+        freq_list = [Constants.UPDATE_DAILY]
+        # On Sunday (6), also send out weekly updates
+        if now.weekday() == 6:
+            freq_list += [Constants.UPDATE_WEEKLY]
+
+        for freq in freq_list:
+            email_dict = User.get_update_emails(freq)
+            # followed_users is list of all users being followed at this freq
+            followed_users = self._get_followed_users(email_dict.keys())
+            days = 1 if freq == Constants.UPDATE_DAILY else 7
+            min_update_dt = today - datetime.timedelta(days=days)
+            card_dict = self._fill_users(
+                followed_users, min_update_dt, max_update_dt)
+
+            message = mail.EmailMessage(
+                sender='synapcards@gmail.com',
+                subject='Your {} update from synapcards.com'.format(freq),
+                reply_to='unsubscribe@{}.appspotmail.com'.format(
+                    Constants.PROJECT_ID))
+            for user_id in email_dict.keys():
+                user = User.get(user_id)
+                message.to = user['email']
+                (message.body, message.html) = self._build_bodies(
+                    user['following'], card_dict, min_update_dt, max_update_dt)
+                message.send()

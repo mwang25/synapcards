@@ -1,3 +1,5 @@
+import logging
+
 from google.appengine.ext import ndb
 
 from card import Card
@@ -67,7 +69,7 @@ class UserManager():
         return {}
 
     @ndb.transactional()
-    def update(cls, user_id, values):
+    def update(self, user_id, values):
         if values['timezone'] not in Constants.SUPPORTED_TIMEZONES:
             raise UserManagerError('invalid or unsupported timezone')
 
@@ -91,4 +93,27 @@ class UserManager():
             values['email'],
             values['profile'],
             values['timezone'],
+            )
+
+    @ndb.transactional()
+    def update_email_freq_status(self, email, freq=None, status=None):
+        user = User.get(email=email)
+        if not user:
+            logging.info("could not find user for " + email)
+            return
+
+        logging.info("user_id=" + user['user_id'])
+        if freq:
+            logging.info("(unsubscribe) freq=" + freq)
+        if status:
+            logging.info("(bounce) status=" + status)
+
+        User.update(
+            user['user_id'],
+            user['user_id'],
+            user['email'],
+            user['profile'],
+            user['timezone'],
+            freq,
+            status,
             )
