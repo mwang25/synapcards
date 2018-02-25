@@ -3,6 +3,7 @@ import datetime
 from google.appengine.ext import ndb
 from constants import Constants
 from email_status import EmailStatus
+from update_frequency import UpdateFrequency
 
 
 class UserOperationError(RuntimeError):
@@ -123,7 +124,7 @@ class User(ndb.Model):
             max_cards=Constants.MAX_CARDS_PER_USER,
             following=[],
             followers=[],
-            update_frequency=Constants.UPDATE_NEVER,
+            update_frequency=UpdateFrequency.NEVER.value,
             ).put()
 
     @classmethod
@@ -182,7 +183,7 @@ class User(ndb.Model):
     def _fill_dict(cls, result):
         following = result.following if result.following else []
         followers = result.followers if result.followers else []
-        update_frequency = Constants.UPDATE_NEVER
+        update_frequency = UpdateFrequency.NEVER.value
         if result.update_frequency:
             update_frequency = result.update_frequency
 

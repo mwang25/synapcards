@@ -6,6 +6,7 @@ from card import Card
 from card_stats import CardStats
 from constants import Constants
 from global_stats import GlobalStats
+from update_frequency import UpdateFrequency
 from user import User
 from user_id import BadUserIdError
 from user_id import UserId
@@ -70,6 +71,8 @@ class UserManager():
 
     @ndb.transactional()
     def update(self, user_id, values):
+        if not UpdateFrequency.valid(values['update_frequency']):
+            raise UserManagerError('invalid or unsupported update frequency')
         if values['timezone'] not in Constants.SUPPORTED_TIMEZONES:
             raise UserManagerError('invalid or unsupported timezone')
 
@@ -93,6 +96,7 @@ class UserManager():
             values['email'],
             values['profile'],
             values['timezone'],
+            values['update_frequency'],
             )
 
     @ndb.transactional()

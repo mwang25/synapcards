@@ -68,10 +68,6 @@ $(function(){
             if (window.location.href.split("/").pop() === data.signed_in_user_id) {
               $('#static-info-section').hide();
               $('#dynamic-info-section').show();
-              $('#dynamic-signed-in-user-id').text(data.signed_in_user_id);
-              $('#dynamic-profile-value').text(data.profile);
-              $('#dynamic-email-value').text(data.email);
-              $('#dynamic-timezone-value').text(data.timezone);
               $('#edit-buttons-section').show();
               link = backendHostUrl + '/card/' + data.signed_in_user_id + ':0';
               $('#add-new-card-link').attr('href', link);
@@ -163,7 +159,14 @@ $(function(){
     document.getElementById("userid-textinput").defaultValue = userData.user_id;
     document.getElementById("email-textinput").defaultValue = userData.email;
     document.getElementById("profile-textarea").defaultValue = userData.profile;
-    console.log("Set dropdown selected to " + userData.timezone);
+    console.log("update freq from backend: " + userData.update_frequency);
+    var dropdown = document.getElementById("update-frequency-dropdown");
+    for (var i = 0; i < dropdown.options.length; i++) {
+       if (dropdown.options[i].value == userData.update_frequency) {
+           dropdown.options[i].selected = true;
+       }
+    }
+    console.log("timezone from backend: " + userData.timezone);
     var dropdown = document.getElementById("timezone-dropdown");
     for (var i = 0; i < dropdown.options.length; i++) {
        if (dropdown.options[i].value == userData.timezone) {
@@ -198,6 +201,7 @@ $(function(){
 
     var userid = $('#userid-textinput').val();
     var email = $('#email-textinput').val();
+    var update_frequency = $('#update-frequency-dropdown').val();
     var timezone = $('#timezone-dropdown').val();
     var profile = $('#profile-textarea').val();
 
@@ -211,6 +215,7 @@ $(function(){
         'user_id': userid,
         'email': email,
         'profile': profile,
+        'update_frequency': update_frequency,
         'timezone': timezone,
       }),
       contentType : 'application/json'
@@ -220,19 +225,9 @@ $(function(){
         console.log("error detected: " + data.error_message)
         $('#error-user-id-container').text(data.error_message);
       } else {
-        console.log("post success (len good), go to dynamic data");
-        userData = data;
-        $('#form-section').hide();
-        $('#static-info-section').hide();
-        $('#dynamic-info-section').show();
-        $('#edit-buttons-section').show();
-        $('#signed-in-user-id-top').text(data.signed_in_user_id);
-        link = backendHostUrl + '/user/' + data.signed_in_user_id;
-        $('#self-profile-link-top').attr('href', link);
-        $('#dynamic-signed-in-user-id').text(data.signed_in_user_id);
-        $('#dynamic-profile-value').text(data.profile);
-        $('#dynamic-email-value').text(data.email);
-        $('#dynamic-timezone-value').text(data.timezone);
+        console.log("post success, reload page");
+        url = backendHostUrl + '/user/' + userid;
+        window.location.href=url;
       }
     });
   });

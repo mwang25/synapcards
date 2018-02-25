@@ -4,6 +4,7 @@ from card import Card
 from constants import Constants
 from global_stats import GlobalStats
 from jinja_wrapper import JinjaWrapper
+from update_frequency import UpdateFrequency
 from user import User
 
 
@@ -13,6 +14,7 @@ class UserHandler(webapp2.RequestHandler):
         if values is not None and values['user_id'] == user_id:
             GlobalStats.incr_views()
             values['timezones'] = Constants.SUPPORTED_TIMEZONES
+            values['update_frequencies'] = UpdateFrequency.as_list()
             values['user_cards'] = Card.latest_by_user(user_id)
             values.update(Card.latest_featured(user_id))
             template = JinjaWrapper.get_template('user.html')

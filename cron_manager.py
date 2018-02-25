@@ -4,6 +4,7 @@ from google.appengine.api import mail
 
 from card import Card
 from constants import Constants
+from update_frequency import UpdateFrequency
 from user import User
 
 
@@ -136,16 +137,16 @@ class CronManager():
         today = datetime.datetime(now.year, now.month, now.day)
         max_update_dt = today
 
-        freq_list = [Constants.UPDATE_DAILY]
+        freq_list = [UpdateFrequency.DAILY.value]
         # On Sunday (6), also send out weekly updates
         if now.weekday() == 6:
-            freq_list += [Constants.UPDATE_WEEKLY]
+            freq_list += [UpdateFrequency.WEEKLY.value]
 
         for freq in freq_list:
             email_dict = User.get_update_emails(freq)
             # followed_users is list of all users being followed at this freq
             followed_users = self._get_followed_users(email_dict.keys())
-            days = 1 if freq == Constants.UPDATE_DAILY else 7
+            days = 1 if freq == UpdateFrequency.DAILY.value else 7
             min_update_dt = today - datetime.timedelta(days=days)
             card_dict = self._fill_users(
                 followed_users, min_update_dt, max_update_dt)

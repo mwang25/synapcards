@@ -37,6 +37,3 @@ class Constants():
         'Europe/London',
         'UTC',
     ]
-    UPDATE_NEVER = 'never'
-    UPDATE_DAILY = 'daily'
-    UPDATE_WEEKLY = 'weekly'

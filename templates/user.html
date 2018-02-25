@@ -57,17 +57,23 @@
         <div class="col-xs-12">
           <h2>About {{ user_id }}:</h2>
           <p>{{ profile }}</p>
+          <p><b>Following:</b> <span>{{ following }}</span></p>
+          <p><b>Followers:</b> <span>{{ followers }}</span></p>
         </div>
       </div>
       <div class="row row-outer" id="dynamic-info-section">
         <div class="col-xs-12">
           <h2>Your settings:</h2>
           <h3>The following fields are visible to everyone:</h3>
-          <p><b>User id:</b> <span id="dynamic-signed-in-user-id"></span></p>
-          <p><b>Profile:</b> <span id="dynamic-profile-value"></span></p>
+          <p><b>User id:</b> <span>{{ user_id }}</span></p>
+          <p><b>Profile:</b> <span>{{ profile }}</span></p>
+          <p><b>Following:</b> <span>{{ following }}</span></p>
+          <p><b>Followers:</b> <span>{{ followers }}</span></p>
           <h3>The following fields are not visible to other people:</h3>
-          <p><b>email:</b> <span id="dynamic-email-value"></span></p>
-          <p><b>Timezone:</b> <span id="dynamic-timezone-value"></span></p>
+          <p><b>email:</b> <span>{{ email }}</span></p>
+          <p><b>email status:</b> <span>{{ email_status }}</span></p>
+          <p><b>email update frequency:</b> <span>{{ update_frequency }}</span></p>
+          <p><b>Timezone:</b> <span>{{ timezone }}</span></p>
         </div>
       </div>
       <div id="form-section">
@@ -118,6 +124,16 @@
             <div class="col-xs-12">
               <p>Your email will be used for notifications from Synapcards (not
                 implemented yet) and will not be shown to other users.</p>
+            </div>
+          </div>
+          <div class="row row-outer">
+            <div class="col-xs-3">Email update frequency:</div>
+            <div class="col-xs-8">
+              <select id="update-frequency-dropdown">
+                {% for freq in update_frequencies %}
+                    <option>{{ freq }}</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
           <div class="row row-outer">
