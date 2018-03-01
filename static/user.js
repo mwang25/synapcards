@@ -49,6 +49,8 @@ $(function(){
           $('#signed-in-top').show();
           $('#signed-out-top').hide();
           $('#static-info-section').show();
+          $('#follow-button-section').hide();
+          $('#unfollow-button-section').hide();
           $('#dynamic-info-section').hide();
           $('#form-section').hide();
           $('#edit-buttons-section').hide();
@@ -64,14 +66,24 @@ $(function(){
             $('#signed-in-user-id-top').text(userData.signed_in_user_id);
             link = backendHostUrl + '/user/' + userData.signed_in_user_id;
             $('#self-profile-link-top').attr('href', link);
-            // TODO: this will not work if URL ends in /
-            if (window.location.href.split("/").pop() === data.signed_in_user_id) {
+            // Extract user_id from last element, which may contain ?follow=
+            last = window.location.href.split("/").pop()
+            page_user_id = last.match(/[\w\d_\.]+/)[0]
+            console.log("user_id = " + page_user_id)
+            if (page_user_id === data.signed_in_user_id) {
               $('#static-info-section').hide();
               $('#dynamic-info-section').show();
               $('#edit-buttons-section').show();
               link = backendHostUrl + '/card/' + data.signed_in_user_id + ':0';
               $('#add-new-card-link').attr('href', link);
               $('#add-new-card-section').show();
+            } else {
+              // signed in, but looking at another user's profile page
+              if (data.following.includes(page_user_id)) {
+                $('#unfollow-button-section').show();
+              } else {
+                $('#follow-button-section').show();
+              }
             }
           });
         });
@@ -83,11 +95,15 @@ $(function(){
           $('#account-deleted-section').show();
           $('#main-section').hide();
           $('#static-info-section').hide();
+          $('#follow-button-section').hide();
+          $('#unfollow-button-section').hide();
           $('#dynamic-info-section').hide();
         } else {
           $('#account-deleted-section').hide();
           $('#main-section').show();
           $('#static-info-section').show();
+          $('#follow-button-section').hide();
+          $('#unfollow-button-section').hide();
           $('#dynamic-info-section').hide();
         }
         $('#form-section').hide();
@@ -232,6 +248,52 @@ $(function(){
     });
   });
 
-  configureFirebaseLogin();
+  function followAjax(action, user_id) {
+    event.preventDefault();
+    $.ajax(backendHostUrl + '/userajax', {
+      headers: {
+        'Authorization': 'Bearer ' + userIdToken
+      },
+      method: 'POST',
+      data: JSON.stringify({
+        'action': action,
+        'user_id': user_id,
+      }),
+      contentType : 'application/json'
+    }).then(function(data){
+      if ('error_message' in data) {
+        console.log("error detected: " + data.error_message)
+      } else {
+        console.log("post success, reload page");
+        url = backendHostUrl + '/user/' + user_id;
+        window.location.href=url;
+      }
+    })
+  }
 
+  var followOtherBtn = $('#follow-other-button');
+  followOtherBtn.click(function(event) {
+    console.log("Follow other button hit: " + page_user_id);
+    followAjax('follow', page_user_id)
+  });
+
+  var unfollowOtherBtn = $('#unfollow-other-button');
+  unfollowOtherBtn.click(function(event) {
+    console.log("Unfollow other button hit: " + page_user_id);
+    followAjax('unfollow', page_user_id)
+  });
+
+  var followSelfBtn = $('#follow-self-button');
+  followSelfBtn.click(function(event) {
+    console.log("Follow self button hit: " + page_user_id);
+    followAjax('follow', page_user_id)
+  });
+
+  var unfollowSelfBtn = $('#unfollow-self-button');
+  unfollowSelfBtn.click(function(event) {
+    console.log("Unfollow self button hit: " + page_user_id);
+    followAjax('unfollow', page_user_id)
+  });
+
+  configureFirebaseLogin();
 });

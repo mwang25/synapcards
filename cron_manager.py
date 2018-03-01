@@ -47,7 +47,7 @@ class CronManager():
         followed = []
         for user_id in user_ids:
             user = User.get(user_id)
-            followed += User.split_strip(user['following'])
+            followed += user['following']
 
         # There might be duplicate user_ids in the list, so remove duplicates.
         return list(set(followed))
@@ -87,14 +87,14 @@ class CronManager():
 
         cards = []
         # convert multiple users separated by comma into a list
-        for u in User.split_strip(following):
+        for u in following:
             cards += card_dict[u]
         (plain_new, plain_upd, html_new, html_upd) = self._split_and_format(
             cards, min_update_dt, max_update_dt)
         num_new = len(plain_new)
         num_upd = len(plain_upd)
 
-        first_line = u'You are following: {}'.format(following)
+        first_line = u'You are following: {}'.format(u', '.join(following))
         second_line = u'There are {} new and updated cards.'.format(
             len(cards))
 

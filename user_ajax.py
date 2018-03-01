@@ -19,6 +19,12 @@ class UserAjax(AjaxHandler):
                     user_info = UserManager().update(user_id, post_data)
                 elif action == 'delete':
                     user_info = UserManager().delete(user_id)
+                elif action == 'follow':
+                    user_info = UserManager().follow(
+                        user_id, post_data['user_id'])
+                elif action == 'unfollow':
+                    user_info = UserManager().unfollow(
+                        user_id, post_data['user_id'])
                 else:
                     msg = 'invalid action ' + action
                     user_info = {'error_message': msg}

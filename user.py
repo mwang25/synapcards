@@ -139,6 +139,8 @@ class User(ndb.Model):
             email,
             profile,
             timezone,
+            following=None,
+            followers=None,
             update_frequency=None,
             email_status=None):
         result = cls._query_user_id(orig_user_id)
@@ -150,8 +152,11 @@ class User(ndb.Model):
             result.email = email
             result.profile = profile
             result.timezone = timezone
-            # result.following = ['mwang25']
-            # result.followers = []
+            # Specifically test for None because [] also tests false
+            if following is not None:
+                result.following = following
+            if followers is not None:
+                result.followers = followers
             if update_frequency:
                 result.update_frequency = update_frequency
             # TODO: if email has changed, status should go to CONF_WAITING
@@ -196,7 +201,7 @@ class User(ndb.Model):
             'total_cards': result.total_cards,
             'next_card_num': result.next_card_num,
             'max_cards': result.max_cards,
-            'following': u', '.join(following),
-            'followers': u', '.join(followers),
+            'following': following,
+            'followers': followers,
             'update_frequency': update_frequency,
             }

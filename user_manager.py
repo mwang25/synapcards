@@ -121,3 +121,46 @@ class UserManager():
             freq,
             status,
             )
+
+    @ndb.transactional()
+    def _follow_common(self, req_user_id, user_id, f):
+        req_user = User.get(req_user_id)
+        if not req_user:
+            logging.error("could not find req_user_id " + req_user_id)
+            return
+
+        user = User.get(user_id)
+        if not user:
+            logging.error("could not find user_id " + user_id)
+            return
+
+        following = f(req_user['following'], [user_id])
+        followers = f(user['followers'], [req_user_id])
+
+        User.update(
+            req_user['user_id'],
+            req_user['user_id'],
+            req_user['email'],
+            req_user['profile'],
+            req_user['timezone'],
+            following=following,
+            )
+
+        User.update(
+            user['user_id'],
+            user['user_id'],
+            user['email'],
+            user['profile'],
+            user['timezone'],
+            followers=followers,
+            )
+
+    def follow(self, req_user_id, user_id):
+        logging.info('{} following {}'.format(req_user_id, user_id))
+        self._follow_common(
+            req_user_id, user_id, lambda x, y: list(set(x) | set(y)))
+
+    def unfollow(self, req_user_id, user_id):
+        logging.info('{} unfollowing {}'.format(req_user_id, user_id))
+        self._follow_common(
+            req_user_id, user_id, lambda x, y: list(set(x) - set(y)))

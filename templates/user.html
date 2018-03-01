@@ -56,9 +56,39 @@
       <div class="row row-outer" id="static-info-section">
         <div class="col-xs-12">
           <h2>About {{ user_id }}:</h2>
+        </div>
+        <div class="col-xs-12">
           <p>{{ profile }}</p>
-          <p><b>Following:</b> <span>{{ following }}</span></p>
-          <p><b>Followers:</b> <span>{{ followers }}</span></p>
+          <p>
+            <b>Following ({{ following_count }}):</b>
+            <span>
+              {% for f in following %}
+                <a href="{{ homepage }}/user/{{ f }}">{{ f }} </a>
+              {% endfor %}
+            </span>
+          </p>
+          <p>
+            <b>Followers ({{ followers_count }}):</b>
+            <span>
+              {% for f in followers %}
+                <a href="{{ homepage }}/user/{{ f }}">{{ f }} </a>
+              {% endfor %}
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="row row-outer" id="follow-button-section">
+        <div class="col-xs-12">
+          <p><b>You are not following {{ user_id }}: </b>
+            <button id="follow-other-button">Follow</button>
+          </p>
+        </div>
+      </div>
+      <div class="row row-outer" id="unfollow-button-section">
+        <div class="col-xs-12">
+          <p><b>You are following {{ user_id }}: </b>
+            <button id="unfollow-other-button">Unfollow</button>
+          </p>
         </div>
       </div>
       <div class="row row-outer" id="dynamic-info-section">
@@ -67,8 +97,31 @@
           <h3>The following fields are visible to everyone:</h3>
           <p><b>User id:</b> <span>{{ user_id }}</span></p>
           <p><b>Profile:</b> <span>{{ profile }}</span></p>
-          <p><b>Following:</b> <span>{{ following }}</span></p>
-          <p><b>Followers:</b> <span>{{ followers }}</span></p>
+          <p>
+            <b>Following ({{ following_count }}):</b>
+            <span>
+              {% for f in following %}
+                <a href="{{ homepage }}/user/{{ f }}">{{ f }} </a>
+              {% endfor %}
+            </span>
+          </p>
+          <p>
+            <b>Followers ({{ followers_count }}):</b>
+            <span>
+              {% for f in followers %}
+                <a href="{{ homepage }}/user/{{ f }}">{{ f }} </a>
+              {% endfor %}
+            </span>
+          </p>
+          {% if user_id in following %}
+            <p><b>You are following yourself: </b>
+              <button id="unfollow-self-button">Unfollow</button>
+            </p>
+          {% else %}
+            <p><b>You are not following yourself: </b>
+              <button id="follow-self-button">Follow</button>
+            </p>
+          {% endif %}
           <h3>The following fields are not visible to other people:</h3>
           <p><b>email:</b> <span>{{ email }}</span></p>
           <p><b>email status:</b> <span>{{ email_status }}</span></p>
