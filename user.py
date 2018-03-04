@@ -110,22 +110,34 @@ class User(ndb.Model):
         return [element.strip() for element in s.split(',')]
 
     @classmethod
-    def add(cls, user_id, firebase_id, email, profile='', timezone='UTC'):
+    def add(
+            cls,
+            user_id,
+            firebase_id,
+            email,
+            email_status=EmailStatus.UNINITIALIZED.name,
+            update_freq=UpdateFrequency.NEVER.value,
+            profile='',
+            timezone='UTC',
+            followers=[],
+            following=[]):
         User(
             key=cls._make_key(user_id),
             firebase_id=firebase_id,
             email=email,
-            email_status=EmailStatus.UNINITIALIZED.name,
+            email_status=email_status,
             timezone=timezone,
             profile=profile,
             created=datetime.datetime.utcnow(),
             total_cards=0,
             next_card_num=1,
             max_cards=Constants.MAX_CARDS_PER_USER,
-            following=[],
-            followers=[],
-            update_frequency=UpdateFrequency.NEVER.value,
+            following=followers,
+            followers=following,
+            update_frequency=update_freq,
             ).put()
+
+        return cls.get(user_id)
 
     @classmethod
     def delete(cls, user_id):
@@ -134,37 +146,34 @@ class User(ndb.Model):
     @classmethod
     def update(
             cls,
-            orig_user_id,
-            new_user_id,
-            email,
-            profile,
-            timezone,
-            following=None,
-            followers=None,
+            user_id,
+            email=None,
+            email_status=None,
             update_frequency=None,
-            email_status=None):
-        result = cls._query_user_id(orig_user_id)
-        if orig_user_id != new_user_id:
-            cls.delete(orig_user_id)
-            cls.add(new_user_id, result.firebase_id, email, profile, timezone)
-            # TODO: also transfer followers, following, update_freq, e_status
-        else:
+            profile=None,
+            timezone=None,
+            following=None,
+            followers=None):
+        result = cls._query_user_id(user_id)
+        if email:
             result.email = email
+        if profile:
             result.profile = profile
+        if timezone:
             result.timezone = timezone
-            # Specifically test for None because [] also tests false
-            if following is not None:
-                result.following = following
-            if followers is not None:
-                result.followers = followers
-            if update_frequency:
-                result.update_frequency = update_frequency
-            # TODO: if email has changed, status should go to CONF_WAITING
-            if email_status:
-                result.email_status = email_status
-            result.put()
+        # Specifically test for None because [] also tests false
+        if following is not None:
+            result.following = following
+        if followers is not None:
+            result.followers = followers
+        if update_frequency:
+            result.update_frequency = update_frequency
+        # TODO: if email has changed, status should go to CONF_WAITING
+        if email_status:
+            result.email_status = email_status
+        result.put()
 
-        return cls.get(new_user_id)
+        return cls.get(user_id)
 
     @classmethod
     def incr_next_card_num(cls, user_id):
@@ -194,6 +203,7 @@ class User(ndb.Model):
 
         return {
             'user_id': result.key.string_id(),
+            'firebase_id': result.firebase_id,
             'email': result.email,
             'email_status': result.email_status,
             'profile': result.profile,

@@ -16,7 +16,12 @@ class UserAjax(AjaxHandler):
 
             try:
                 if action == 'edit':
-                    user_info = UserManager().update(user_id, post_data)
+                    if user_id == post_data['user_id']:
+                        user_info = UserManager().update(user_id, post_data)
+                    else:
+                        user_info = UserManager().change_user_id(
+                            user_id, post_data)
+
                 elif action == 'delete':
                     user_info = UserManager().delete(user_id)
                 elif action == 'follow':

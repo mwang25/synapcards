@@ -17,7 +17,7 @@ class UserId:
 
     @classmethod
     def validate(cls, user_id):
-        print 'user_id is ' + user_id
+        """Validate format of user_id.  Does not check uniqueness."""
         if (len(user_id) < cls.MIN_CHARACTERS):
             raise BadUserIdError(
                 'must be at least {} characters'.format(cls.MIN_CHARACTERS))
@@ -27,15 +27,8 @@ class UserId:
                 'can be at most {} characters'.format(cls.MAX_CHARACTERS))
 
         m = re.match(r'([a-z])([a-z\d\._]+)([a-z\d])', user_id)
-        if m is not None:
-            print 'Group0:' + m.group(0)
-            print 'Group1:' + m.group(1)
-            print 'Group2:' + m.group(2)
-            print 'Group3:' + m.group(3)
-        if m is None or m.group(0) != user_id:
+        if not m or m.group(0) != user_id:
             raise BadUserIdError('illegal character')
-
-        # TODO: check for duplicate
 
     @classmethod
     def generate_id(cls, email):

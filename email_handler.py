@@ -38,8 +38,7 @@ class EmailHandler(InboundMailHandler):
         logging.info("extracted to=" + to)
 
         if to == 'unsubscribe':
-            UserManager().update_email_freq_status(
-                email, freq=UpdateFrequency.NEVER.value)
+            UserManager().update_email_freq(email, UpdateFrequency.NEVER.value)
         else:
             logging.info("unsupported to=" + to)
 

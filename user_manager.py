@@ -8,7 +8,6 @@ from constants import Constants
 from global_stats import GlobalStats
 from update_frequency import UpdateFrequency
 from user import User
-from user_id import BadUserIdError
 from user_id import UserId
 
 
@@ -49,7 +48,7 @@ class UserManager():
                 count += 1
                 # This logic belongs in CardManager, but I don't want
                 # user_manager to depend on card_manager, and also I want to
-                # update global card count only once.
+                # batch updates to the global card count.
                 CardStats.decr_authors(c['authors'])
                 CardStats.decr_source(c['source'])
                 CardStats.decr_tags(c['tags'])
@@ -58,6 +57,31 @@ class UserManager():
             self._decr_card_count(count)
             count = 0
 
+    @ndb.transactional()
+    def _cleanup_follows(self, user_id):
+        """Remove this user from other users followers and following list"""
+        user = User.get(user_id)
+
+        # For all users this user is following, remove this user from their
+        # followers field.
+        for u in user['following']:
+            if not u == user_id:
+                t_user = User.get(u)
+                User.update(
+                    u,
+                    followers=list(set(t_user['followers']) - set([user_id]))
+                    )
+
+        # For all users who are following this user, remove this user from
+        # their following field.
+        for u in user['followers']:
+            if not u == user_id:
+                t_user = User.get(u)
+                User.update(
+                    u,
+                    following=list(set(t_user['following']) - set([user_id]))
+                    )
+
     @ndb.transactional(xg=True)
     def _delete_user_and_update_counts(self, user_id):
         User.delete(user_id)
@@ -65,62 +89,101 @@ class UserManager():
         GlobalStats.incr_deleted_users()
 
     def delete(self, user_id):
+        """Delete user.  Note this is not the same as changing user id."""
         self._delete_all_user_cards(user_id)
+        self._cleanup_follows(user_id)
         self._delete_user_and_update_counts(user_id)
         return {}
 
-    @ndb.transactional()
-    def update(self, user_id, values):
+    def _user_id_change_allowed(self, user_info):
+        if user_info['total_cards'] > 0:
+            raise UserManagerError('cannot change user id after adding cards')
+        if len(user_info['following']) > 0:
+            raise UserManagerError(
+                'cannot change user id after following users')
+        if len(user_info['followers']) > 0:
+            raise UserManagerError(
+                'cannot change user id after being followed')
+
+    def _user_id_unique(self, user_id):
+        if User.exists(user_id):
+            raise UserManagerError('that user id is already taken')
+
+    def _validate_update(self, values):
         if not UpdateFrequency.valid(values['update_frequency']):
             raise UserManagerError('invalid or unsupported update frequency')
         if values['timezone'] not in Constants.SUPPORTED_TIMEZONES:
             raise UserManagerError('invalid or unsupported timezone')
 
-        settings = User.get(user_id)
-        if settings['user_id'] != values['user_id']:
-            if settings['total_cards'] > 0:
-                raise UserManagerError(
-                    'cannot change user id after adding cards')
+    @ndb.transactional()
+    def _change_user_id_main(self, user_id, values):
+        """Most of change user_id can be done inside transaction."""
+        # All these checks will raise exception if they fail.
+        user_info = User.get(user_id)
+        self._user_id_change_allowed(user_info)
+        new_user_id = values['user_id']
+        self._user_id_unique(new_user_id)
+        UserId.validate(new_user_id)
+        self._validate_update(values)
 
-            try:
-                UserId.validate(values['user_id'])
-            except BadUserIdError as err:
-                return {'error_message': err.message}
-            except Exception as e:
-                msg = str(type(e)) + ':' + ''.join(e.args)
-                return {'error_message': msg}
+        # Add a new user with new user_id using a mix of existing settings
+        # and any possible new settings passed in.
+        # Add user will not detect a change in email so will not send out
+        # a new confirmation email, so don't allow change in email here.
+        # Change_user_id will catch that case.
+        User.add(
+            new_user_id,
+            user_info['firebase_id'],
+            user_info['email'],
+            user_info['email_status'],
+            values['update_frequency'],
+            values['profile'],
+            values['timezone'],
+            user_info['followers'],
+            user_info['following'],
+            )
+
+    def change_user_id(self, user_id, values):
+        """Change user_id and other settings."""
+        self._change_user_id_main(user_id, values)
+        # Must delete the original user_id outside of the transaction
+        # because this user_id row was locked down during the transaction.
+        User.delete(user_id)
+        # Update user in case the email was changed.
+        return self.update(values['user_id'], values)
+
+    @ndb.transactional()
+    def update(self, user_id, values):
+        """Change user settings, but not user_id."""
+        self._validate_update(values)
 
         return User.update(
             user_id,
-            values['user_id'],
-            values['email'],
-            values['profile'],
-            values['timezone'],
-            values['update_frequency'],
+            email=values['email'],
+            update_frequency=values['update_frequency'],
+            profile=values['profile'],
+            timezone=values['timezone'],
             )
 
     @ndb.transactional()
-    def update_email_freq_status(self, email, freq=None, status=None):
+    def update_email_freq(self, email, freq):
         user = User.get(email=email)
         if not user:
-            logging.info("could not find user for " + email)
+            logging.error("could not find user for " + email)
             return
 
-        logging.info("user_id=" + user['user_id'])
-        if freq:
-            logging.info("(unsubscribe) freq=" + freq)
-        if status:
-            logging.info("(bounce) status=" + status)
+        logging.info('user={} email_freq={}'.format(user['user_id'], freq))
+        User.update(user['user_id'], update_frequency=freq)
 
-        User.update(
-            user['user_id'],
-            user['user_id'],
-            user['email'],
-            user['profile'],
-            user['timezone'],
-            freq,
-            status,
-            )
+    @ndb.transactional()
+    def update_email_status(self, email, status):
+        user = User.get(email=email)
+        if not user:
+            logging.error("could not find user for " + email)
+            return
+
+        logging.info('user={} email_status={}'.format(user['user_id'], status))
+        User.update(user['user_id'], email_status=status)
 
     @ndb.transactional()
     def _follow_common(self, req_user_id, user_id, f):
@@ -134,25 +197,14 @@ class UserManager():
             logging.error("could not find user_id " + user_id)
             return
 
-        following = f(req_user['following'], [user_id])
-        followers = f(user['followers'], [req_user_id])
-
         User.update(
             req_user['user_id'],
-            req_user['user_id'],
-            req_user['email'],
-            req_user['profile'],
-            req_user['timezone'],
-            following=following,
+            following=f(req_user['following'], [user_id]),
             )
 
         User.update(
             user['user_id'],
-            user['user_id'],
-            user['email'],
-            user['profile'],
-            user['timezone'],
-            followers=followers,
+            followers=f(user['followers'], [req_user_id]),
             )
 
     def follow(self, req_user_id, user_id):
