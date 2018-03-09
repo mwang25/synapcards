@@ -241,7 +241,11 @@ $(function(){
         console.log("error detected: " + data.error_message)
         $('#error-user-id-container').text(data.error_message);
       } else {
-        console.log("post success, reload page");
+        console.log("post success, check conf email popup");
+        if (data.email_status == 'WAIT_FOR_CONF' &&
+            userData.email_status !=  'WAIT_FOR_CONF') {
+          window.alert('Please check your email for confirmation message');
+        }
         url = backendHostUrl + '/user/' + userid;
         window.location.href=url;
       }

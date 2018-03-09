@@ -1,4 +1,5 @@
 class Constants():
+    CONF_EMAIL_TIMEOUT = 20
     HOMEPAGE = 'https://synapcards.com'
     FEATURED_CARDS = 'featured cards'
     MAX_CARD_WORDS = 100

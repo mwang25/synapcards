@@ -1,10 +1,13 @@
+import datetime
 import logging
 
+from google.appengine.api import mail
 from google.appengine.ext import ndb
 
 from card import Card
 from card_stats import CardStats
 from constants import Constants
+from email_status import EmailStatus
 from global_stats import GlobalStats
 from update_frequency import UpdateFrequency
 from user import User
@@ -128,15 +131,14 @@ class UserManager():
 
         # Add a new user with new user_id using a mix of existing settings
         # and any possible new settings passed in.
-        # Add user will not detect a change in email so will not send out
-        # a new confirmation email, so don't allow change in email here.
-        # Change_user_id will catch that case.
+        # The new user is created with the existing email and update_freq
+        # so that any changes can be detected by the calling function.
         User.add(
             new_user_id,
             user_info['firebase_id'],
             user_info['email'],
             user_info['email_status'],
-            values['update_frequency'],
+            user_info['update_frequency'],
             values['profile'],
             values['timezone'],
             user_info['followers'],
@@ -149,7 +151,7 @@ class UserManager():
         # Must delete the original user_id outside of the transaction
         # because this user_id row was locked down during the transaction.
         User.delete(user_id)
-        # Update user in case the email was changed.
+        # Update user in case the email or update_freq was changed.
         return self.update(values['user_id'], values)
 
     @ndb.transactional()
@@ -157,10 +159,25 @@ class UserManager():
         """Change user settings, but not user_id."""
         self._validate_update(values)
 
+        # If email address is blank, make sure email status is UNINITIALIZED
+        user_info = User.get(user_id)
+        status = user_info['email_status']
+        if len(values['email']) == 0:
+            status = EmailStatus.UNINITIALIZED.name
+            values['update_frequency'] = UpdateFrequency.NEVER.value
+
+        conf_sent = None
+        if self._should_send_conf_email(user_info, values):
+            self._send_conf_email(values['email'])
+            status = EmailStatus.WAIT_FOR_CONF.name
+            conf_sent = datetime.datetime.utcnow()
+
         return User.update(
             user_id,
             email=values['email'],
             update_frequency=values['update_frequency'],
+            email_status=status,
+            confirmation_sent=conf_sent,
             profile=values['profile'],
             timezone=values['timezone'],
             )
@@ -179,11 +196,40 @@ class UserManager():
     def update_email_status(self, email, status):
         user = User.get(email=email)
         if not user:
-            logging.error("could not find user for " + email)
+            logging.error('could not find user for ' + email)
             return
 
-        logging.info('user={} email_status={}'.format(user['user_id'], status))
-        User.update(user['user_id'], email_status=status)
+        user_id = user['user_id']
+        logging.info('user={} email_status={}'.format(user_id, status.name))
+        User.update(user_id, email_status=status.name)
+
+    def _should_send_conf_email(self, user_info, values):
+        """Return True if a conf email should be sent"""
+        # Can't send out email if it is blank
+        if len(values['email']) == 0:
+            return False
+
+        # New users changing their freq
+        never = UpdateFrequency.NEVER.value
+        if (user_info['email_status'] == EmailStatus.UNINITIALIZED.name
+                and user_info['update_frequency'] == never
+                and values['update_frequency'] != never):
+            return True
+
+        # Changing email address
+        if user_info['email'] != values['email']:
+            return True
+
+    def _send_conf_email(self, email):
+        text_body = ('Please confirm this email address for use with '
+                     'synapcards.com by simply replying to this email.')
+        mail.EmailMessage(
+            to=email,
+            sender='synapcards@gmail.com',
+            subject='Please confirm this email address',
+            reply_to='confirm@{}.appspotmail.com'.format(Constants.PROJECT_ID),
+            body=text_body
+            ).send()
 
     @ndb.transactional()
     def _follow_common(self, req_user_id, user_id, f):

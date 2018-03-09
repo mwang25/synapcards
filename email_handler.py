@@ -17,6 +17,7 @@ import re
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
 import webapp2
 
+from conf_manager import ConfManager
 from update_frequency import UpdateFrequency
 from user_manager import UserManager
 
@@ -39,6 +40,8 @@ class EmailHandler(InboundMailHandler):
 
         if to == 'unsubscribe':
             UserManager().update_email_freq(email, UpdateFrequency.NEVER.value)
+        elif to == 'confirm':
+            ConfManager().process_email(email)
         else:
             logging.info("unsupported to=" + to)
 

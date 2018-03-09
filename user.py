@@ -3,6 +3,7 @@ import datetime
 from google.appengine.ext import ndb
 from constants import Constants
 from email_status import EmailStatus
+from publish_datetime import PublishDatetime
 from update_frequency import UpdateFrequency
 
 
@@ -28,6 +29,7 @@ class User(ndb.Model):
     following = ndb.StringProperty(repeated=True)
     followers = ndb.StringProperty(repeated=True)
     update_frequency = ndb.StringProperty()
+    confirmation_sent = ndb.DateTimeProperty()
 
     @classmethod
     def _make_key(cls, user_id):
@@ -149,28 +151,31 @@ class User(ndb.Model):
             user_id,
             email=None,
             email_status=None,
+            confirmation_sent=None,
             update_frequency=None,
             profile=None,
             timezone=None,
             following=None,
             followers=None):
         result = cls._query_user_id(user_id)
-        if email:
+        # Have to specifically test for None in some of these cases because
+        # empty string or [] also tests false.
+        if email is not None:
             result.email = email
-        if profile:
+        if profile is not None:
             result.profile = profile
         if timezone:
             result.timezone = timezone
-        # Specifically test for None because [] also tests false
         if following is not None:
             result.following = following
         if followers is not None:
             result.followers = followers
         if update_frequency:
             result.update_frequency = update_frequency
-        # TODO: if email has changed, status should go to CONF_WAITING
         if email_status:
             result.email_status = email_status
+        if confirmation_sent:
+            result.confirmation_sent = confirmation_sent
         result.put()
 
         return cls.get(user_id)
@@ -197,6 +202,10 @@ class User(ndb.Model):
     def _fill_dict(cls, result):
         following = result.following if result.following else []
         followers = result.followers if result.followers else []
+        conf_sent = ''
+        if result.confirmation_sent:
+            conf_sent = result.confirmation_sent.strftime(
+                PublishDatetime.FULL_DATE_TIME)
         update_frequency = UpdateFrequency.NEVER.value
         if result.update_frequency:
             update_frequency = result.update_frequency
@@ -206,6 +215,7 @@ class User(ndb.Model):
             'firebase_id': result.firebase_id,
             'email': result.email,
             'email_status': result.email_status,
+            'confirmation_sent': conf_sent,
             'profile': result.profile,
             'timezone': result.timezone,
             'total_cards': result.total_cards,
