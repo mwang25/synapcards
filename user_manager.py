@@ -6,6 +6,7 @@ from google.appengine.ext import ndb
 
 from card import Card
 from card_stats import CardStats
+from conf_datetime import ConfDatetime
 from constants import Constants
 from email_status import EmailStatus
 from global_stats import GlobalStats
@@ -36,6 +37,20 @@ class UserManager():
         User.add(user_id, firebase_id, email)
         GlobalStats.incr_users()
         return user_id
+
+    @ndb.transactional()
+    def get(self, user_id):
+        """Get user info but also update email_status"""
+        user_info = User.get(user_id)
+        # Check if email_status needs to be timed out.
+        if user_info['email_status'] == EmailStatus.WAIT_FOR_CONF.name:
+            conf_dt = ConfDatetime.from_string(user_info['confirmation_sent'])
+            if conf_dt.expired():
+                logging.info('Detected conf timed out for ' + user_id)
+                user_info = User.update(
+                    user_id, email_status=EmailStatus.CONF_TIMED_OUT.name)
+
+        return user_info
 
     @ndb.transactional()
     def _decr_card_count(self, count):

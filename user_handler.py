@@ -5,12 +5,12 @@ from constants import Constants
 from global_stats import GlobalStats
 from jinja_wrapper import JinjaWrapper
 from update_frequency import UpdateFrequency
-from user import User
+from user_manager import UserManager
 
 
 class UserHandler(webapp2.RequestHandler):
     def get(self, user_id):
-        values = User.get(user_id)
+        values = UserManager().get(user_id)
         if values and values['user_id'] == user_id:
             GlobalStats.incr_views()
             values['timezones'] = Constants.SUPPORTED_TIMEZONES

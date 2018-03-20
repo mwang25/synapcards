@@ -1,9 +1,10 @@
 import datetime
 
 from google.appengine.ext import ndb
+
+from conf_datetime import ConfDatetime
 from constants import Constants
 from email_status import EmailStatus
-from publish_datetime import PublishDatetime
 from update_frequency import UpdateFrequency
 
 
@@ -204,8 +205,7 @@ class User(ndb.Model):
         followers = result.followers if result.followers else []
         conf_sent = ''
         if result.confirmation_sent:
-            conf_sent = result.confirmation_sent.strftime(
-                PublishDatetime.FULL_DATE_TIME)
+            conf_sent = str(ConfDatetime(result.confirmation_sent))
         update_frequency = UpdateFrequency.NEVER.value
         if result.update_frequency:
             update_frequency = result.update_frequency
