@@ -50,6 +50,11 @@ class UserManager():
                 user_info = User.update(
                     user_id, email_status=EmailStatus.CONF_TIMED_OUT.name)
 
+        if user_info['email_status'] == EmailStatus.UNINITIALIZED.name:
+            user_info['force_send_conf_text'] = 'Send Conf Email'
+        else:
+            user_info['force_send_conf_text'] = 'Resend Conf Email'
+
         return user_info
 
     @ndb.transactional()
@@ -217,6 +222,16 @@ class UserManager():
         user_id = user['user_id']
         logging.info('user={} email_status={}'.format(user_id, status.name))
         User.update(user_id, email_status=status.name)
+
+    @ndb.transactional()
+    def force_send_conf(self, user_id):
+        user_info = User.get(user_id)
+        self._send_conf_email(user_info['email'])
+        return User.update(
+            user_id,
+            email_status=EmailStatus.WAIT_FOR_CONF.name,
+            confirmation_sent=datetime.datetime.utcnow(),
+            )
 
     def _should_send_conf_email(self, user_info, values):
         """Return True if a conf email should be sent"""

@@ -51,6 +51,7 @@ $(function(){
           $('#static-info-section').show();
           $('#follow-button-section').hide();
           $('#unfollow-button-section').hide();
+          $('#force-send-conf-section').hide();
           $('#dynamic-info-section').hide();
           $('#form-section').hide();
           $('#edit-buttons-section').hide();
@@ -77,6 +78,13 @@ $(function(){
               link = backendHostUrl + '/card/' + data.signed_in_user_id + ':0';
               $('#add-new-card-link').attr('href', link);
               $('#add-new-card-section').show();
+              // No need to resend conf email if status is already CONFIRMED_GOOD,
+              // but allow user to force resend in every other state.
+              if (data.email.length > 0) {
+                if (data.email_status != 'CONFIRMED_GOOD') {
+                  $('#force-send-conf-section').show();
+                }
+              }
             } else {
               // signed in, but looking at another user's profile page
               if (data.following.includes(page_user_id)) {
@@ -91,6 +99,7 @@ $(function(){
         // Signed out state.
         $('#signed-in-top').hide();
         $('#signed-out-top').show();
+        $('#force-send-conf-section').hide();
         if (accountDeleted) {
           $('#account-deleted-section').show();
           $('#main-section').hide();
@@ -297,6 +306,35 @@ $(function(){
   unfollowSelfBtn.click(function(event) {
     console.log("Unfollow self button hit: " + page_user_id);
     followAjax('unfollow', page_user_id)
+  });
+
+  function forceSendConfAjax() {
+    event.preventDefault();
+    $.ajax(backendHostUrl + '/userajax', {
+      headers: {
+        'Authorization': 'Bearer ' + userIdToken
+      },
+      method: 'POST',
+      data: JSON.stringify({
+        'action': 'force_send_conf',
+      }),
+      contentType : 'application/json'
+    }).then(function(data){
+      if ('error_message' in data) {
+        console.log("error detected: " + data.error_message)
+      } else {
+        console.log("force send conf success, reload page");
+        url = backendHostUrl + '/user/' + page_user_id;
+        window.alert('Please check your email for confirmation message');
+        window.location.href=url;
+      }
+    })
+  }
+
+  var forceSendConfBtn = $('#force-send-conf-button');
+  forceSendConfBtn.click(function(event) {
+    console.log("Force send conf button hit: " + page_user_id);
+    forceSendConfAjax()
   });
 
   configureFirebaseLogin();
