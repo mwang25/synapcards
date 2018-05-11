@@ -14,13 +14,18 @@ body {
   background-color: #d0cece;
 }
 
-textarea
-{
+textarea {
   width:100%;
 }
 
 .menu-bar {
   background-color: #d0cece;
+}
+
+.img-banner {
+  display: block;
+  width: 100%;
+  height: auto
 }
 
 .container-fluid {
@@ -32,11 +37,18 @@ textarea
   margin-right: 15px;
 }
 
+.card-outer {
+  margin-left: 0px;
+  padding-left: 0px;
+  margin-right: 30px;
+  padding-right: 0px;
+  margin-bottom: 15px;
+}
+
 .card {
   background-color: white;
-  margin-left: 15px;
-  padding-left: 2px;
-  margin-bottom: 15px;
+  padding-left: 1px;
+  padding-right: 1px;
 }
 
 .card-scrollable {
