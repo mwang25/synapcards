@@ -72,6 +72,10 @@
             <b>Rating:</b> {{ card.rating }}/{{ card.max_rating }}
           </p>
           <p>{{ card.detailed_notes }}</p>
+          <p>
+            <b>Card created:</b> {{ card.created }}<br>
+            <b>Card updated:</b> {{ card.updated }}<br>
+          </p>
         </div>
       </div>
       <div class="row row-outer card-outer" id="dynamic-card-section">
@@ -94,6 +98,10 @@
             <b>Rating:</b> <span id="dynamic-rating"></span>/<span id="dynamic-max-rating"></span>
           </p>
           <p><span id="dynamic-detailed-notes"></span></p>
+          <p>
+            <b>Card created:</b> <span id="dynamic-created"></span><br>
+            <b>Card updated:</b> <span id="dynamic-updated"></span><br>
+          </p>
         </div>
       </div>
       <div class="row row-outer" id="buttons-section">

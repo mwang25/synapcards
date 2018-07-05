@@ -10,6 +10,7 @@ class PublishDatetimeError(RuntimeError):
 
 class PublishDatetime:
     SUPPORTED_FORMATS = ['%Y', '%B %Y', '%m/%d/%Y']
+    CREATE_UPDATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     def __init__(self, dt=None, output_format=None):
         self.datetime = dt

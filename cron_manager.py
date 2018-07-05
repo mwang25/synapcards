@@ -4,6 +4,7 @@ from google.appengine.api import mail
 
 from card import Card
 from constants import Constants
+from publish_datetime import PublishDatetime
 from update_frequency import UpdateFrequency
 from user import User
 
@@ -32,7 +33,8 @@ class CronManager():
                 Constants.HOMEPAGE, c['card_id'], c['card_id'])
             body = u'({}/{}) {}'.format(
                 c['rating'], Constants.MAX_RATING, c['title'])
-            creation_dt = datetime.datetime.strptime(c['created'], '%m/%d/%Y')
+            creation_dt = datetime.datetime.strptime(
+                c['created'], PublishDatetime.CREATE_UPDATE_FORMAT)
             if creation_dt >= min_dt and creation_dt < max_dt:
                 plain_new.append(u'{} {}\n'.format(c['card_id'], body))
                 html_new.append(u'{} {}<br>'.format(link, body))

@@ -298,7 +298,11 @@ class Card(ndb.Model):
                     card.source_publish_datetime,
                     card.source_publish_datetime_format)),
                 'created': str(PublishDatetime(
-                    card.creation_datetime, '%m/%d/%Y')),
+                    card.creation_datetime,
+                    PublishDatetime.CREATE_UPDATE_FORMAT)),
+                'updated': str(PublishDatetime(
+                    card.last_update_datetime,
+                    PublishDatetime.CREATE_UPDATE_FORMAT)),
                 'tags': u', '.join(card.tags),
                 'rating': card.rating,
                 'max_rating': card.max_rating,
