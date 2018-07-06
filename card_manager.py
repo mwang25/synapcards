@@ -1,3 +1,6 @@
+import datetime
+import pytz
+
 from author_node import AuthorNode
 from card import Card
 from card_node import CardNode
@@ -34,6 +37,16 @@ class CardManager():
         # create Tag and Author objects just to validate them
         [TagNode(t, 0) for t in CardNode.as_list(values['tags'])]
         [AuthorNode(t, 0) for a in CardNode.as_list(values['authors'])]
+
+    @classmethod
+    def _get_user_tzinfo(cls, user_id):
+        user_dict = User.get(user_id)
+        return pytz.timezone(user_dict['timezone'])
+
+    @classmethod
+    def _local_datetime(cls, naive_dt, local_tzinfo):
+        utc_tzinfo = pytz.timezone('UTC')
+        return utc_tzinfo.localize(naive_dt).astimezone(local_tzinfo)
 
     @classmethod
     def add(cls, user_id, values):
@@ -115,4 +128,19 @@ class CardManager():
     def get(cls, values):
         # No authentication check for just getting the card
         card_id = Card.make_card_id(values['user_id'], values['card_num'])
-        return Card.get(card_id)
+        card_dict = Card.get(card_id)
+
+        # insert another set of timestamps localized to user's timezone
+        local_tzinfo = cls._get_user_tzinfo(values['user_id'])
+        created_dt = datetime.datetime.strptime(
+            card_dict['created'], PublishDatetime.CREATE_UPDATE_FORMAT)
+        updated_dt = datetime.datetime.strptime(
+            card_dict['updated'], PublishDatetime.CREATE_UPDATE_FORMAT)
+        card_dict['created_loc'] = str(PublishDatetime(
+            cls._local_datetime(created_dt, local_tzinfo),
+            PublishDatetime.CREATE_UPDATE_FORMAT))
+        card_dict['updated_loc'] = str(PublishDatetime(
+            cls._local_datetime(updated_dt, local_tzinfo),
+            PublishDatetime.CREATE_UPDATE_FORMAT))
+
+        return card_dict

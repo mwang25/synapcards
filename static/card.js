@@ -175,8 +175,8 @@ $(function(){
     $('#dynamic-rating').text(cardData.rating);
     $('#dynamic-max-rating').text(cardData.max_rating);
     $('#dynamic-detailed-notes').html(cardData.detailed_notes);
-    $('#dynamic-created').text(cardData.created);
-    $('#dynamic-updated').text(cardData.updated);
+    $('#dynamic-created').text(cardData.created_loc);
+    $('#dynamic-updated').text(cardData.updated_loc);
   }
 
   var signOutBtn =$('#sign-out');
