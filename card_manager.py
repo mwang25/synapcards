@@ -1,6 +1,3 @@
-import datetime
-import pytz
-
 from author_node import AuthorNode
 from card import Card
 from card_node import CardNode
@@ -39,14 +36,15 @@ class CardManager():
         [AuthorNode(t, 0) for a in CardNode.as_list(values['authors'])]
 
     @classmethod
-    def _get_user_tzinfo(cls, user_id):
+    def _get_user_tzname(cls, user_id):
         user_dict = User.get(user_id)
-        return pytz.timezone(user_dict['timezone'])
+        return user_dict['timezone']
 
     @classmethod
-    def _local_datetime(cls, naive_dt, local_tzinfo):
-        utc_tzinfo = pytz.timezone('UTC')
-        return utc_tzinfo.localize(naive_dt).astimezone(local_tzinfo)
+    def _localize_timestamp(cls, timestamp, user_tzname):
+        pdt = PublishDatetime.parse_string(timestamp)
+        pdt.set_timezone(user_tzname)
+        return str(pdt)
 
     @classmethod
     def add(cls, user_id, values):
@@ -131,16 +129,10 @@ class CardManager():
         card_dict = Card.get(card_id)
 
         # insert another set of timestamps localized to user's timezone
-        local_tzinfo = cls._get_user_tzinfo(values['user_id'])
-        created_dt = datetime.datetime.strptime(
-            card_dict['created'], PublishDatetime.CREATE_UPDATE_FORMAT)
-        updated_dt = datetime.datetime.strptime(
-            card_dict['updated'], PublishDatetime.CREATE_UPDATE_FORMAT)
-        card_dict['created_loc'] = str(PublishDatetime(
-            cls._local_datetime(created_dt, local_tzinfo),
-            PublishDatetime.CREATE_UPDATE_FORMAT))
-        card_dict['updated_loc'] = str(PublishDatetime(
-            cls._local_datetime(updated_dt, local_tzinfo),
-            PublishDatetime.CREATE_UPDATE_FORMAT))
+        user_tzname = cls._get_user_tzname(values['user_id'])
+        card_dict['created_loc'] = cls._localize_timestamp(
+            card_dict['created'], user_tzname)
+        card_dict['updated_loc'] = cls._localize_timestamp(
+            card_dict['updated'], user_tzname)
 
         return card_dict

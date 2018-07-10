@@ -33,8 +33,7 @@ class CronManager():
                 Constants.HOMEPAGE, c['card_id'], c['card_id'])
             body = u'({}/{}) {}'.format(
                 c['rating'], Constants.MAX_RATING, c['title'])
-            creation_dt = datetime.datetime.strptime(
-                c['created'], PublishDatetime.CREATE_UPDATE_FORMAT)
+            creation_dt = PublishDatetime.parse_string(c['created']).datetime
             if creation_dt >= min_dt and creation_dt < max_dt:
                 plain_new.append(u'{} {}\n'.format(c['card_id'], body))
                 html_new.append(u'{} {}<br>'.format(link, body))

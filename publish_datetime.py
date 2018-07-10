@@ -1,6 +1,5 @@
-import calendar
 import datetime
-import re
+import pytz
 
 
 class PublishDatetimeError(RuntimeError):
@@ -9,8 +8,13 @@ class PublishDatetimeError(RuntimeError):
 
 
 class PublishDatetime:
-    SUPPORTED_FORMATS = ['%Y', '%B %Y', '%m/%d/%Y']
     CREATE_UPDATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+    SUPPORTED_FORMATS = [
+        '%Y',
+        '%B %Y',
+        '%m/%Y',
+        '%m/%d/%Y',
+        CREATE_UPDATE_FORMAT]
 
     def __init__(self, dt=None, output_format=None):
         self.datetime = dt
@@ -22,41 +26,41 @@ class PublishDatetime:
         if not s or len(s) == 0:
             return cls()
 
+        try:
+            dt = datetime.datetime.strptime(s, cls.CREATE_UPDATE_FORMAT)
+            return cls(dt, cls.CREATE_UPDATE_FORMAT)
+        except:
+            # fall through and try the other formats
+            pass
+
         # YYYY
-        m = re.match(r'^([\d]{4})$', s)
-        if m:
-            return cls(
-                datetime.datetime(year=int(m.group(1)), month=1, day=1),
-                '%Y')
+        try:
+            dt = datetime.datetime.strptime(s, '%Y')
+            return cls(dt, '%Y')
+        except:
+            pass
 
         # mm/YYYY
-        m = re.match(r'^([\d]{1,2})/([\d]{4})$', s)
-        if m:
-            month = int(m.group(1))
-            return cls(
-                datetime.datetime(year=int(m.group(2)), month=month, day=1),
-                '%B %Y')
+        try:
+            dt = datetime.datetime.strptime(s, '%m/%Y')
+            # Use the month name even when input is month number
+            return cls(dt, '%B %Y')
+        except:
+            pass
 
         # Month YYYY
-        m = re.match(r'^([\w]+)\s([\d]{4})$', s)
-        if m:
-            month = m.group(1)
-            if month in calendar.month_name:
-                return cls(
-                    datetime.datetime(
-                        year=int(m.group(2)),
-                        month=list(calendar.month_name).index(month),
-                        day=1),
-                    '%B %Y')
+        try:
+            dt = datetime.datetime.strptime(s, '%B %Y')
+            return cls(dt, '%B %Y')
+        except:
+            pass
 
         # mm/dd/YYYY
-        m = re.match(r'^([\d]{1,2})/([\d]{1,2})/([\d]{4})$', s)
-        if m:
-            month = int(m.group(1))
-            day = int(m.group(2))
-            return cls(
-                datetime.datetime(year=int(m.group(3)), month=month, day=day),
-                '%m/%d/%Y')
+        try:
+            dt = datetime.datetime.strptime(s, '%m/%d/%Y')
+            return cls(dt, '%m/%d/%Y')
+        except:
+            pass
 
         raise PublishDatetimeError('Bad date format')
 
@@ -66,53 +70,10 @@ class PublishDatetime:
         else:
             return ''
 
-
-def run_tests():
-    try:
-        p = PublishDatetime().parse_string('1999')
-        print p.datetime
-        print p.output_format
-        print p
-
-        p = PublishDatetime().parse_string('4/1999')
-        print p.datetime
-        print p.output_format
-        print p
-
-        p = PublishDatetime().parse_string('July 1999')
-        print p.datetime
-        print p.output_format
-        print p
-
-        p = PublishDatetime().parse_string('5/20/1999')
-        print p.datetime
-        print p.output_format
-        print p
-
-    except PublishDatetimeError as err:
-        print err.message
-
-    try:
-        s = '99'
-        print 'Now try bad string ' + s
-        p = PublishDatetime().parse_string(s)
-    except PublishDatetimeError as err:
-        print err.message
-
-    try:
-        s = '333/1999'
-        print 'Now try bad string ' + s
-        p = PublishDatetime().parse_string(s)
-    except PublishDatetimeError as err:
-        print err.message
-
-    try:
-        s = 'blah 1999'
-        print 'Now try bad string ' + s
-        p = PublishDatetime().parse_string(s)
-    except PublishDatetimeError as err:
-        print err.message
-
-
-if __name__ == "__main__":
-    run_tests()
+    def set_timezone(self, tzname):
+        # If datetime is naive, assume it is UTC
+        if not self.datetime.tzname():
+            self.datetime = self.datetime.replace(tzinfo=pytz.timezone('UTC'))
+        # Adjust datetime to specified tzname
+        loc_tzinfo = pytz.timezone(tzname)
+        self.datetime = self.datetime.astimezone(loc_tzinfo)
