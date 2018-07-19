@@ -59,7 +59,7 @@
               <b>Card:</b> {{ card.card_id }}
             </div>
             <div class="col-xs-6 text-right">
-              <b>TODO:</b> icons, menu
+              <b>Likes:</b> {{ card.num_likes }}
             </div>
           </div>
           <h3>{{ card.title_html }}</h3>
@@ -75,6 +75,7 @@
           <p>
             <b>Card created:</b> {{ card.created_loc }}<br>
             <b>Card updated:</b> {{ card.updated_loc }}<br>
+            <b>Liked By:</b> {{ card.liked_by }}<br>
           </p>
         </div>
       </div>
@@ -85,7 +86,9 @@
               <b>Card:</b> <span id="dynamic-card-id"></span></p>
             </div>
             <div class="col-xs-6 text-right">
-              <b>TODO:</b> icons, menu
+              <img id="heart-hollow-icon" src="../static/heart-hollow.svg" class="heart-icon" alt="like">
+              <img id="heart-filled-icon" src="../static/heart-filled.svg" class="heart-icon" alt="unlike">
+              <span id="dynamic-num-likes"></span>
             </div>
           </div>
           <h3><span id="dynamic-title-html"></h3>
@@ -101,17 +104,18 @@
           <p>
             <b>Card created:</b> <span id="dynamic-created"></span><br>
             <b>Card updated:</b> <span id="dynamic-updated"></span><br>
+            <b>Liked By:</b> <span id="dynamic-liked-by"></span><br>
           </p>
         </div>
       </div>
       <div class="row row-outer" id="buttons-section">
-        <div class="col-xs-4">
+        <div class="col-xs-4 text-left">
           <button id="add-button">Add New Card</button>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 text-center">
           <button id="edit-button">Edit Card</button>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 text-right" >
           <button id="delete-button">Delete Card</button>
         </div>
         <div class="col-xs-12">
@@ -214,11 +218,12 @@
             </div>
           </div>
           <div class="row row-outer">
-            <div class="col-xs-6">
-              <button id="save-button">Save</button>
-            </div>
-            <div class="col-xs-6">
+            <div class="col-xs-4 text-left"></div>
+            <div class="col-xs-4 text-center">
               <button id="cancel-button">Cancel Edit</button>
+            </div>
+            <div class="col-xs-4 text-right" >
+              <button id="save-button">Save</button>
             </div>
           </div>
         </form>

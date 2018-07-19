@@ -33,6 +33,7 @@ class Card(ndb.Model):
     source_publish_datetime_format = ndb.StringProperty()
     creation_datetime = ndb.DateTimeProperty()
     last_update_datetime = ndb.DateTimeProperty()
+    liked_by = ndb.StringProperty(repeated=True)
 
     @classmethod
     def make_card_id(cls, user_id, card_num):
@@ -42,6 +43,13 @@ class Card(ndb.Model):
     def split_card_id(cls, card_id):
         a = card_id.split(':')
         return a[0], int(a[1])
+
+    @classmethod
+    def liked_by_as_list(cls, liked_by):
+        if len(liked_by) > 0:
+            return [x.strip() for x in liked_by.split(',')]
+        else:
+            return []
 
     @classmethod
     def _get(cls, card_id):
@@ -128,6 +136,15 @@ class Card(ndb.Model):
         card.rating = rating
         card.detailed_notes = detailed_notes
         card.last_update_datetime = datetime.datetime.utcnow()
+        card.put()
+
+    @classmethod
+    def update_likes(cls, card_id, liked_by):
+        card = cls._get(card_id)
+        if not card:
+            raise CardError('Does not exist')
+
+        card.liked_by = liked_by
         card.put()
 
     @classmethod
@@ -289,6 +306,13 @@ class Card(ndb.Model):
 
     @classmethod
     def _fill_dict(cls, card, truncate=False):
+        if card.liked_by:
+            liked_by = u', '.join(card.liked_by)
+            num_likes = len(card.liked_by)
+        else:
+            liked_by = u''
+            num_likes = 0
+
         try:
             return {
                 'card_id': card.key.string_id(),
@@ -314,7 +338,9 @@ class Card(ndb.Model):
                     card.summary,
                     card.detailed_notes,
                     card.key.string_id(),
-                    truncate)
+                    truncate),
+                'liked_by': liked_by,
+                'num_likes': num_likes,
             }
         except Exception as e:
             msg = str(type(e))

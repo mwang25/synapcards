@@ -17,6 +17,7 @@ from card_ajax import CardAjax
 from card_handler import CardHandler
 from featured_cards_handler import FeaturedCardsHandler
 from index_handler import IndexHandler
+from like_ajax import LikeAjax
 from search_handler import SearchHandler
 from signin_ajax import SigninAjax
 from signin_handler import SigninHandler
@@ -26,6 +27,7 @@ from user_handler import UserHandler
 
 
 app = webapp2.WSGIApplication([
+    ('/likeajax', LikeAjax),
     ('/signinajax', SigninAjax),
     ('/signin', SigninHandler),
     ('/userajax', UserAjax),

@@ -123,9 +123,39 @@ class CardManager():
         GlobalStats.decr_cards()
 
     @classmethod
+    def like(cls, values):
+        user_id = values['user_id']
+        if not User.exists(user_id):
+            msg = 'User does not exist ' + user_id
+            raise CardManagerError(msg)
+
+        card_id = values['card_id']
+        card_dict = Card.get(card_id)
+        liked_by = Card.liked_by_as_list(card_dict['liked_by'])
+        Card.update_likes(card_id, list(set(liked_by) | set([user_id])))
+
+        return cls.get(values)
+
+    @classmethod
+    def unlike(cls, values):
+        # delete user_id even if it does not exist anymore
+        user_id = values['user_id']
+
+        card_id = values['card_id']
+        card_dict = Card.get(card_id)
+        liked_by = Card.liked_by_as_list(card_dict['liked_by'])
+        Card.update_likes(card_id, list(set(liked_by) - set([user_id])))
+
+        return cls.get(values)
+
+    @classmethod
     def get(cls, values):
         # No authentication check for just getting the card
-        card_id = Card.make_card_id(values['user_id'], values['card_num'])
+        # Use card_id if present, otherwise make it from user_id and card_num
+        if 'card_id' in values:
+            card_id = values['card_id']
+        else:
+            card_id = Card.make_card_id(values['user_id'], values['card_num'])
         card_dict = Card.get(card_id)
 
         # insert another set of timestamps localized to user's timezone

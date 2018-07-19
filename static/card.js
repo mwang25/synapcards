@@ -30,10 +30,12 @@ $(function(){
     messagingSenderId: "266358714814"
   };
 
-  // This is passed into the backend to authenticate the user.
+  // First pop gives cardId, which is userId:num
+  var cardId = window.location.pathname.split("/").pop();
+  // The next 3 vars are passed into the backend to authenticate the user.
   var userIdToken = null;
-  var userId = null;
-  var cardNum = null;
+  var userId = cardId.split(":")[0];
+  var cardNum = cardId.split(":")[1];
   // Signed in user data stored across functions.
   var cardData = null;
   // Params from the query portion of the URL
@@ -46,11 +48,6 @@ $(function(){
 
     // [START onAuthStateChanged]
     firebase.auth().onAuthStateChanged(function(user) {
-      // first pop gives userId:num, split again to find userId and cardNum
-      cardId = window.location.pathname.split("/").pop();
-      console.log("initial card id: " + cardId);
-      userId = cardId.split(":")[0];
-      cardNum = cardId.split(":")[1];
       parseQueryParams(window.location.search.substr(1));
       if (user) {
         user.getToken().then(function(idToken) {
@@ -58,6 +55,8 @@ $(function(){
           $('#signed-in-top').show();
           $('#signed-out-top').hide();
           $('#static-card-section').show();
+          $('#heart-filled-icon').hide();
+          $('#heart-hollow-icon').hide();
           $('#dynamic-card-section').hide();
           $('#form-section').hide();
           $('#buttons-section').hide();
@@ -72,16 +71,16 @@ $(function(){
             }),
             contentType : 'application/json'
           }).then(function(data){
+            // Signed in, but could be viewing another user's card
             cardData = data;
             $('#signed-in-user-id-top').text(data.signed_in_user_id);
             link = backendHostUrl + '/user/' + data.signed_in_user_id;
             $('#self-profile-link-top').attr('href', link);
-            console.log("user_id:" + userId);
+            console.log("card user_id:" + userId);
             console.log("signed_in_user_id:" + data.signed_in_user_id);
-            console.log("js v3");
+            $('#static-card-section').hide();
             if (userId == data.signed_in_user_id) {
-              console.log("matched signed in user");
-              $('#static-card-section').hide();
+              console.log("matched signed in user (viewing own card)");
               if (cardNum == 0) {
                 showForm();
               } else if (queryParams['op'] == 'edit') {
@@ -92,9 +91,15 @@ $(function(){
                 console.log("fill dynamic card");
                 fillDynamicCard();
                 $('#dynamic-card-section').show();
+                setLikeState();
                 console.log("showing buttons");
                 $('#buttons-section').show();
               }
+            } else {
+              console.log("signed in user (viewing someone else's card)");
+              fillDynamicCard();
+              $('#dynamic-card-section').show();
+              setLikeState();
             }
           });
         });
@@ -164,6 +169,7 @@ $(function(){
   }
 
   function fillDynamicCard() {
+    $('#dynamic-num-likes').text(cardData.num_likes);
     $('#dynamic-card-id').text(cardData.card_id);
     $('#dynamic-title').text(cardData.title);
     $('#dynamic-title-html').html(cardData.title_html);
@@ -177,6 +183,19 @@ $(function(){
     $('#dynamic-detailed-notes').html(cardData.detailed_notes);
     $('#dynamic-created').text(cardData.created_loc);
     $('#dynamic-updated').text(cardData.updated_loc);
+    $('#dynamic-liked-by').text(cardData.liked_by);
+  }
+
+  function setLikeState() {
+    console.log("cardData.liked_by " + cardData.liked_by);
+    liked_by = cardData.liked_by.split(", ").map(s => s.trim());
+    console.log("trimmed_arr " + liked_by);
+    console.log("signed_in_user_id " + cardData.signed_in_user_id);
+    if (liked_by.indexOf(cardData.signed_in_user_id) > -1) {
+      $('#heart-filled-icon').show();
+    } else {
+      $('#heart-hollow-icon').show();
+    }
   }
 
   var signOutBtn =$('#sign-out');
@@ -235,7 +254,7 @@ $(function(){
   var editBtn =$('#edit-button');
   editBtn.click(function(event) {
     event.preventDefault();
-    url = backendHostUrl + '/card/' + userId + ':' + cardNum + '?op=edit';
+    url = backendHostUrl + '/card/' + cardId + '?op=edit';
     console.log("edit card redirect to: " + url);
     window.location.href=url;
   });
@@ -243,11 +262,9 @@ $(function(){
   var cancelBtn =$('#cancel-button');
   cancelBtn.click(function(event) {
     event.preventDefault();
-    $('#static-card-section').hide();
-    $('#dynamic-card-section').show();
-    $('#form-section').hide();
-    // $('#error-user-id-container').empty();
-    $('#buttons-section').show();
+    url = backendHostUrl + '/card/' + cardId;
+    console.log("edit canceled, redirect to: " + url);
+    window.location.href=url;
   });
 
   var saveBtn = $('#save-button');
@@ -296,12 +313,56 @@ $(function(){
         $('#form-error-message').text(data.error_message);
       } else {
         console.log("card saved");
-        cardNum = data.card_id.split(":")[1];
-        url = backendHostUrl + '/card/' + userId + ':' + cardNum;
+        url = backendHostUrl + '/card/' + data.card_id;
         console.log("post save redirect: " + url);
         window.location.href=url;
       }
     });
+  });
+
+  function likeOperation(op) {
+    console.log("likeOperation op: " + op)
+    console.log("likeOperation cardId: " + cardId)
+    $.ajax(backendHostUrl + '/likeajax', {
+      headers: {
+        'Authorization': 'Bearer ' + userIdToken
+      },
+      method: 'POST',
+      data: JSON.stringify({
+        'action': op,
+        'user_id': cardData.signed_in_user_id,
+        'card_id': cardId,
+      }),
+      contentType : 'application/json'
+    }).then(function(data){
+      if ('error_message' in data) {
+        console.log("like ajax error detected: " + data.error_message)
+        window.alert(data.error_message);
+      } else {
+        console.log("like ajax success");
+        cardData = data;
+        $('#dynamic-num-likes').text(cardData.num_likes);
+        $('#dynamic-liked-by').text(cardData.liked_by);
+      }
+    });
+  }
+
+  var heartHollowIcon = $('#heart-hollow-icon');
+  heartHollowIcon.click(function(event) {
+    event.preventDefault();
+    console.log("heart hollow icon hit --> liked");
+    heartFilledIcon.show();
+    heartHollowIcon.hide();
+    likeOperation('like');
+  });
+
+  var heartFilledIcon = $('#heart-filled-icon');
+  heartFilledIcon.click(function(event) {
+    event.preventDefault();
+    console.log("heart filled icon hit --> unliked");
+    heartFilledIcon.hide();
+    heartHollowIcon.show();
+    likeOperation('unlike');
   });
 
   configureFirebaseLogin();
