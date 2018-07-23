@@ -256,3 +256,10 @@ indexes:
     direction: desc
   - name: last_update_datetime
     direction: desc
+
+- kind: Like
+  properties:
+    - name: card_id
+    - name: liker
+    - name: like_datetime
+      direction: desc
