@@ -101,10 +101,10 @@
         <div class="col-xs-12 card">
           <div class="row">
             <div class="col-xs-6 text-left">
-              <b>Card:</b><a href="card/{{ c.card_id }}">{{ c.card_id }}</a>
+              <b>Card:</b><a href="card/{{ c.card_id }}"> {{ c.card_id }}</a>
             </div>
             <div class="col-xs-6 text-right">
-              <b>TODO:</b> icons, menu
+              <b>Likes:</b><a href="card/{{ c.card_id }}"> {{ c.num_likes }}</a >
             </div>
           </div>
           <h3>{{ c.title_html }}</h3>

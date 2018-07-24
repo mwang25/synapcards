@@ -265,10 +265,10 @@
           <div class="col-xs-12 card">
               <div class="row">
                   <div class="col-xs-6 text-left">
-                      <b>Card:</b><a href="../card/{{ c.card_id }}">{{ c.card_id }}</a>
+                      <b>Card:</b><a href="../card/{{ c.card_id }}"> {{ c.card_id }}</a>
                   </div>
                   <div class="col-xs-6 text-right">
-                      <b>TODO:</b> icons, menu
+                      <b>Likes:</b><a href="../card/{{ c.card_id }}"> {{ c.num_likes }}</a>
                   </div>
               </div>
               <h3>{{ c.title_html }}</h3>
@@ -296,7 +296,7 @@
           <div class="col-xs-12">
               <h2>Featured Cards:</h2>
               {% if featured_cards_title %}
-                <b>Card:</b><a href="../card/{{ featured_cards_id }}">{{ featured_cards_id }}</a><br>
+                <b>Card:</b><a href="../card/{{ featured_cards_id }}"> {{ featured_cards_id }}</a><br>
                 <b>Published:</b> {{ featured_cards_published}}<br>
                 <h3>{{ featured_cards_title }}</h3>
                 <p>{{ featured_cards_summary }}</p>
@@ -309,10 +309,10 @@
           <div class="col-xs-12 card">
               <div class="row">
                   <div class="col-xs-6 text-left">
-                      <b>Card:</b><a href="../card/{{ c.card_id }}">{{ c.card_id }}</a>
+                      <b>Card:</b><a href="../card/{{ c.card_id }}"> {{ c.card_id }}</a>
                   </div>
                   <div class="col-xs-6 text-right">
-                      <b>TODO:</b> icons, menu
+                      <b>Likes:</b><a href="../card/{{ c.card_id }}"> {{ c.num_likes }}</a>
                   </div>
               </div>
               <h3>{{ c.title_html }}</h3>
