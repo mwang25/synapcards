@@ -1,5 +1,4 @@
 from ajax_handler import AjaxHandler
-from user import User
 from user_manager import UserManager
 from user_manager import UserManagerError
 from user_id import BadUserIdError
@@ -11,7 +10,7 @@ class SigninAjax(AjaxHandler):
         if firebase_id:
             try:
                 user_id = UserManager().get_with_add_option(firebase_id, email)
-                user_info = User.get(user_id)
+                user_info = UserManager().get(user_id)
             except (UserManagerError, BadUserIdError) as err:
                 user_info = {'error_message': err.message}
             except Exception as e:

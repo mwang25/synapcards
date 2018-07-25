@@ -73,6 +73,10 @@ $(function(){
             console.log("user_id = " + page_user_id)
             if (page_user_id === data.signed_in_user_id) {
               $('#static-info-section').hide();
+              $('#dynamic-email').text(data.email);
+              $('#dynamic-email-status').text(data.email_status);
+              $('#dynamic-update-frequency').text(data.update_frequency);
+              $('#dynamic-timezone').text(data.timezone);
               $('#dynamic-info-section').show();
               $('#edit-buttons-section').show();
               link = backendHostUrl + '/card/' + data.signed_in_user_id + ':0';
@@ -82,6 +86,7 @@ $(function(){
               // but allow user to force resend in every other state.
               if (data.email.length > 0) {
                 if (data.email_status != 'CONFIRMED_GOOD') {
+                  document.getElementById("force-send-conf-button").innerHTML = data.force_send_conf_text;
                   $('#force-send-conf-section').show();
                 }
               }

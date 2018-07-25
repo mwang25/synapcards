@@ -123,19 +123,19 @@
             </p>
           {% endif %}
           <h3>The following fields are not visible to other people:</h3>
-          <p><b>email:</b> <span>{{ email }}</span></p>
+          <p><b>email:</b> <span id="dynamic-email"></span></p>
           <div class="row row-outer">
             <div class="col-xs-4">
-              <p><b>email status:</b> <span>{{ email_status }}</span></p>
+              <p><b>email status:</b> <span id="dynamic-email-status"></span></p>
             </div>
             <div class="col-xs-8" id="force-send-conf-section">
               <p>
-                <button id="force-send-conf-button">{{force_send_conf_text}}</button>
+                <button id="force-send-conf-button"></button>
               </p>
             </div>
           </div>
-          <p><b>email update frequency:</b> <span>{{ update_frequency }}</span></p>
-          <p><b>Timezone:</b> <span>{{ timezone }}</span></p>
+          <p><b>email update frequency:</b> <span id="dynamic-update-frequency"></span></p>
+          <p><b>Timezone:</b> <span id="dynamic-timezone"></span></p>
         </div>
       </div>
       <div id="form-section">
