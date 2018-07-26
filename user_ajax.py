@@ -40,5 +40,7 @@ class UserAjax(AjaxHandler):
             except Exception as e:
                 msg = str(type(e)) + ':' + ''.join(e.args)
                 user_info = {'error_message': msg}
+        else:
+            user_info = {'error_message': AjaxHandler.REFRESH_MSG}
 
         self.write_response(user_info)

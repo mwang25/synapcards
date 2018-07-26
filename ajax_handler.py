@@ -10,6 +10,8 @@ HTTP_REQUEST = google.auth.transport.requests.Request()
 
 
 class AjaxHandler(webapp2.RequestHandler):
+    REFRESH_MSG = 'authentication failed, please refresh page or sign in again'
+
     def _write_cors_headers(self):
         """Write headers needed required by ajax preflight requests"""
         self.response.headers.add_header('Access-Control-Allow-Origin', '*')

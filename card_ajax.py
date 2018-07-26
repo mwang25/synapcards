@@ -44,7 +44,6 @@ class CardAjax(AjaxHandler):
                 msg = str(type(e)) + ':' + ''.join(e.args)
                 card_dict['error_message'] = msg
         else:
-            msg = 'authentication failed, please refresh page or sign in again'
-            card_dict = {'error_message': msg}
+            card_dict = {'error_message': AjaxHandler.REFRESH_MSG}
 
         self.write_response(card_dict)

@@ -1,3 +1,5 @@
+import logging
+
 from ajax_handler import AjaxHandler
 from user_manager import UserManager
 from user_manager import UserManagerError
@@ -17,6 +19,7 @@ class SigninAjax(AjaxHandler):
                 msg = str(type(e)) + ':' + ''.join(e.args)
                 user_info = {'error_message': msg}
         else:
+            logging.error("could not find firebase_id")
             user_info = {'error_message': 'internal error: no firebase_id'}
 
         self.write_response(user_info)
