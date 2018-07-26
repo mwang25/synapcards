@@ -79,9 +79,6 @@ $(function(){
               $('#dynamic-timezone').text(data.timezone);
               $('#dynamic-info-section').show();
               $('#edit-buttons-section').show();
-              link = backendHostUrl + '/card/' + data.signed_in_user_id + ':0';
-              $('#add-new-card-link').attr('href', link);
-              $('#add-new-card-section').show();
               // No need to resend conf email if status is already CONFIRMED_GOOD,
               // but allow user to force resend in every other state.
               if (data.email.length > 0) {
@@ -92,6 +89,8 @@ $(function(){
               }
             } else {
               // signed in, but looking at another user's profile page
+              // TODO: using includes is wrong.  "abcd".includes("ab") == true
+              // See indexOf in card.js
               if (data.following.includes(page_user_id)) {
                 $('#unfollow-button-section').show();
               } else {
@@ -340,6 +339,14 @@ $(function(){
   forceSendConfBtn.click(function(event) {
     console.log("Force send conf button hit: " + page_user_id);
     forceSendConfAjax()
+  });
+
+  var addNewCardBtn = $('#add-new-card-button');
+  addNewCardBtn.click(function(event) {
+    event.preventDefault();
+    url = backendHostUrl + '/card/' + userData.signed_in_user_id + ':0';
+    console.log("addNewCardBtn: redirect to " + url);
+    window.location.href=url;
   });
 
   configureFirebaseLogin();
