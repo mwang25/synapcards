@@ -9,11 +9,12 @@ class PublishDatetimeError(RuntimeError):
 
 class PublishDatetime:
     CREATE_UPDATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+    MDY_FORMAT = '%m/%d/%Y'
     SUPPORTED_FORMATS = [
         '%Y',
         '%B %Y',
         '%m/%Y',
-        '%m/%d/%Y',
+        MDY_FORMAT,
         CREATE_UPDATE_FORMAT]
 
     def __init__(self, dt=None, output_format=None):
@@ -58,7 +59,7 @@ class PublishDatetime:
         # mm/dd/YYYY
         try:
             dt = datetime.datetime.strptime(s, '%m/%d/%Y')
-            return cls(dt, '%m/%d/%Y')
+            return cls(dt, cls.MDY_FORMAT)
         except:
             pass
 

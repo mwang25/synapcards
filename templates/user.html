@@ -248,6 +248,32 @@
         </div>
       </div>
       <div id="main-section">
+        <div class="row row-outer">
+            <div class="col-xs-12">
+                <h2>Likes:</h2>
+            </div>
+            <div class="col-xs-12">
+              <p>Showing
+                <select id="likes-count-dropdown">
+                  <option>10</option>
+                  <option>25</option>
+                  <option>100</option>
+                  <option>250</option>
+                </select> most recent likes:</p>
+            </div>
+            <div class="col-xs-12">
+              <ul>
+                {% for k in summarized_likes %}
+                    <li>
+                      {{ k.date }}
+                      <a href="../card/{{ k.card_id }}">{{ k.card_id }}</a>
+                      {{ k.title }}
+                    </li>
+                {% endfor %}
+              </ul>
+              <br>
+            </div>
+        </div>
       <div class="row row-outer">
           <div class="col-xs-12">
               <h2>Latest Cards:</h2>

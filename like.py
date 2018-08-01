@@ -3,6 +3,7 @@ import datetime
 from google.appengine.ext import ndb
 
 from constants import Constants
+from publish_datetime import PublishDatetime
 
 
 class Like(ndb.Model):
@@ -34,6 +35,14 @@ class Like(ndb.Model):
             k.delete()
 
     @classmethod
+    def latest_likes_by(cls, user_id, count):
+        likes = cls._search({
+            'liker': user_id,
+            'count': count,
+        })
+        return [cls._fill_dict(k) for k in likes]
+
+    @classmethod
     def _search(cls, args, keys_only=False):
         query = Like.query()
         if 'card_id' in args:
@@ -48,3 +57,14 @@ class Like(ndb.Model):
         else:
             count = int(args.get('count', Constants.SEARCH_DEFAULT_COUNT))
             return query.fetch(count)
+
+    @classmethod
+    def _fill_dict(cls, like):
+        return {
+            'timestamp': str(PublishDatetime(
+                like.like_datetime,
+                PublishDatetime.CREATE_UPDATE_FORMAT)),
+            'liker': like.liker,
+            'card_id': like.card_id,
+            'card_owner': like.card_owner,
+        }

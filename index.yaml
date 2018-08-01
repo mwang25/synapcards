@@ -263,3 +263,9 @@ indexes:
     - name: liker
     - name: like_datetime
       direction: desc
+
+- kind: Like
+  properties:
+    - name: liker
+    - name: like_datetime
+      direction: desc

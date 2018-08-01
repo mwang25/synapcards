@@ -4,6 +4,7 @@ from card import Card
 from constants import Constants
 from global_stats import GlobalStats
 from jinja_wrapper import JinjaWrapper
+from like_manager import LikeManager
 from update_frequency import UpdateFrequency
 from user_manager import UserManager
 
@@ -21,6 +22,13 @@ class UserHandler(webapp2.RequestHandler):
             values['following_count'] = len(values['following'])
             values['followers'].sort()
             values['followers_count'] = len(values['followers'])
+
+            likes_count = Constants.SEARCH_DEFAULT_COUNT
+            if len(self.request.get('likes_count')) > 0:
+                likes_count = int(self.request.get('likes_count'))
+            values['summarized_likes'] = LikeManager().latest_likes_by(
+                user_id, likes_count)
+
             template = JinjaWrapper.get_template('user.html')
             self.response.write(template.render(values))
         else:

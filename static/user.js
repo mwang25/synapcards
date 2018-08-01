@@ -36,10 +36,21 @@ $(function(){
   var userData = null;
   var accountDeleted = false;
 
+  // Params from the query portion of the URL
+  var queryParams = {};
+
   // Firebase log-in
   function configureFirebaseLogin() {
 
     firebase.initializeApp(config);
+
+    parseQueryParams(window.location.search.substr(1));
+    setLikesCount();
+
+    // Extract user_id from last element, which may contain ?follow=
+    last = window.location.href.split("/").pop()
+    page_user_id = last.match(/[\w\d_\.]+/)[0]
+    console.log("page_user_id = " + page_user_id)
 
     // [START onAuthStateChanged]
     firebase.auth().onAuthStateChanged(function(user) {
@@ -67,10 +78,6 @@ $(function(){
             $('#signed-in-user-id-top').text(userData.signed_in_user_id);
             link = backendHostUrl + '/user/' + userData.signed_in_user_id;
             $('#self-profile-link-top').attr('href', link);
-            // Extract user_id from last element, which may contain ?follow=
-            last = window.location.href.split("/").pop()
-            page_user_id = last.match(/[\w\d_\.]+/)[0]
-            console.log("user_id = " + page_user_id)
             if (page_user_id === data.signed_in_user_id) {
               $('#static-info-section').hide();
               $('#dynamic-email').text(data.email);
@@ -124,6 +131,19 @@ $(function(){
         $('#add-new-card-section').hide();
       }
     });
+  }
+
+  function parseQueryParams(qstr) {
+    console.log("qstr:" + qstr);
+    var arr = qstr.split("&");
+    for (var i = 0; i < arr.length; i++) {
+        console.log("arr: " + arr[i] + " len: " + arr[i].length);
+        if (/=/.test(arr[i])) {
+            var p = arr[i].split("=");
+            var val = decodeURIComponent(p[1].replace(/\+/g, ' '));
+            queryParams[p[0]] = val;
+        }
+    }
   }
 
   var signOutBtn =$('#sign-out');
@@ -348,6 +368,26 @@ $(function(){
     console.log("addNewCardBtn: redirect to " + url);
     window.location.href=url;
   });
+
+  var likesCountDrop = $('#likes-count-dropdown');
+  likesCountDrop.change(function(event) {
+    event.preventDefault();
+    url = backendHostUrl + '/user/' + page_user_id + '?likes_count=' + likesCountDrop.val();
+    console.log("likesCountDrop: redirect to " + url);
+    window.location.href=url;
+  });
+
+  function setLikesCount() {
+    var dropdown = document.getElementById("likes-count-dropdown");
+    dropdown.options[0].selected = true;
+    for (var i = 0; i < dropdown.options.length; i++) {
+       console.log(dropdown.options[i].value + "==" + queryParams.likes_count)
+       if (dropdown.options[i].value == queryParams.likes_count) {
+           console.log("set")
+           dropdown.options[i].selected = true;
+       }
+    }
+  }
 
   configureFirebaseLogin();
 });
