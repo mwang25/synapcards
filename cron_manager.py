@@ -4,6 +4,7 @@ from google.appengine.api import mail
 
 from card import Card
 from constants import Constants
+from like_manager import LikeManager
 from publish_datetime import PublishDatetime
 from update_frequency import UpdateFrequency
 from user import User
@@ -22,6 +23,28 @@ class CronManager():
         except:
             return 500
         return 200
+
+    def _build_likes_bodies(self, user_id, min_dt, max_dt):
+        """Return text and html bodies of likes of this user's cards"""
+        likes = LikeManager().latest_likes_of(user_id, min_dt, max_dt)
+        first_line = u'Likes of your cards ({}):'.format(len(likes))
+        plain = first_line
+        plain += u'\n'
+        for k in likes:
+            plain += u'{} liked {} {}\n'.format(
+                k['liker'], k['card_id'], k['title'])
+
+        html = first_line
+        html += u'<br>'
+        for k in likes:
+            liker_link = u'<a href={}/user/{}>{}</a>'.format(
+                Constants.HOMEPAGE, k['liker'], k['liker'])
+            card_link = u'<a href={}/card/{}>{}</a>'.format(
+                Constants.HOMEPAGE, k['card_id'], k['card_id'])
+            html += u'{} liked {} {}<br>'.format(
+                liker_link, card_link, k['title'])
+
+        return plain, html
 
     def _split_and_format(self, cards, min_dt, max_dt):
         plain_new = []
@@ -66,10 +89,14 @@ class CronManager():
         return d
 
     def _build_bodies(
-            self, following, card_dict, min_update_dt, max_update_dt):
+            self, user, card_dict, min_update_dt, max_update_dt):
         unsubscribe = u'To unsubscribe, simply reply to this email.'
 
+        likes_plain, likes_html = self._build_likes_bodies(
+            user['user_id'], min_update_dt, max_update_dt)
+
         # User enabled updates but is not following anyone
+        following = user['following']
         if len(following) == 0:
             follow_instructions = u"""Currently, you are not following any users.
                 After you start following some Synapcards users, this email
@@ -77,10 +104,14 @@ class CronManager():
                 users you follow."""
             plain = follow_instructions
             plain += u'\n\n'
+            plain += likes_plain
+            plain += u'\n\n'
             plain += unsubscribe
 
             html = u'<html><head></head><body>'
             html += follow_instructions
+            html += u'<br><br>'
+            html += likes_html
             html += u'<br><br>'
             html += unsubscribe
             html += u'</body></html>'
@@ -111,7 +142,9 @@ class CronManager():
             plain += u'Updated cards ({}):\n'.format(num_upd)
             for c in plain_upd:
                 plain += c
-        plain += u'\n'
+        plain += u'\n\n'
+        plain += likes_plain
+        plain += u'\n\n'
         plain += unsubscribe
 
         html = u'<html><head></head><body>'
@@ -127,7 +160,9 @@ class CronManager():
             html += u'<b>Updated cards ({}):</b><br>'.format(num_upd)
             for c in html_upd:
                 html += c
-        html += u'<br>'
+        html += u'<br><br>'
+        html += likes_html
+        html += u'<br><br>'
         html += unsubscribe
         html += u'</body></html>'
 
@@ -161,5 +196,5 @@ class CronManager():
                 user = User.get(user_id)
                 message.to = user['email']
                 (message.body, message.html) = self._build_bodies(
-                    user['following'], card_dict, min_update_dt, max_update_dt)
+                    user, card_dict, min_update_dt, max_update_dt)
                 message.send()

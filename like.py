@@ -43,14 +43,30 @@ class Like(ndb.Model):
         return [cls._fill_dict(k) for k in likes]
 
     @classmethod
+    def latest_likes_of(cls, user_id, min_datetime, max_datetime):
+        """Return likes received by specified user_id"""
+        likes = cls._search({
+            'card_owner': user_id,
+            'min_datetime': min_datetime,
+            'max_datetime': max_datetime,
+        })
+        return [cls._fill_dict(k) for k in likes]
+
+    @classmethod
     def _search(cls, args, keys_only=False):
         query = Like.query()
         if 'card_id' in args:
             query = query.filter(Like.card_id == args['card_id'])
         if 'card_owner' in args:
-            query = query.filter(Like.card_id == args['card_owner'])
+            query = query.filter(Like.card_owner == args['card_owner'])
         if 'liker' in args:
             query = query.filter(Like.liker == args['liker'])
+        if 'min_datetime' in args:
+            query = query.filter(
+                Like.like_datetime >= args['min_datetime'])
+        if 'max_datetime' in args:
+            query = query.filter(
+                Like.like_datetime < args['max_datetime'])
         query = query.order(-Like.like_datetime)
         if keys_only:
             return query.fetch(keys_only=True)

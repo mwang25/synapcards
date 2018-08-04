@@ -20,17 +20,22 @@ class LikeManager():
         card_id = values['card_id']
         Like.unlike(user_id, card_id)
 
-    def latest_likes_by(cls, user_id, count=Constants.SEARCH_DEFAULT_COUNT):
-        user_dict = User.get(user_id)
+    def _augment_like(self, k, tzname):
+        card = Card.get(k['card_id'])
+        k['title'] = card['title']
+        # Convert the like timestamp to just MDY in user's timezone
+        pdt = PublishDatetime.parse_string(k['timestamp'])
+        pdt.set_timezone(tzname)
+        pdt.output_format = PublishDatetime.MDY_FORMAT
+        k['date'] = str(pdt)
+        return k
 
+    def latest_likes_by(self, user_id, count=Constants.SEARCH_DEFAULT_COUNT):
+        tzname = User.get(user_id)['timezone']
         likes = Like.latest_likes_by(user_id, count)
-        for k in likes:
-            card = Card.get(k['card_id'])
-            k['title'] = card['title']
-            # Convert the like timestamp to just MDY in user's timezone
-            pdt = PublishDatetime.parse_string(k['timestamp'])
-            pdt.set_timezone(user_dict['timezone'])
-            pdt.output_format = PublishDatetime.MDY_FORMAT
-            k['date'] = str(pdt)
+        return [self._augment_like(k, tzname) for k in likes]
 
-        return likes
+    def latest_likes_of(self, user_id, min_datetime, max_datetime):
+        tzname = User.get(user_id)['timezone']
+        likes = Like.latest_likes_of(user_id, min_datetime, max_datetime)
+        return [self._augment_like(k, tzname) for k in likes]
