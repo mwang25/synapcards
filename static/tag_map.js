@@ -98,6 +98,14 @@ $(function(){
     }
   }
 
+  var sortByDrop = $('#sort-by-dropdown');
+  sortByDrop.change(function(event) {
+    event.preventDefault();
+    url = backendHostUrl + '/tagmap?sort_by=' + sortByDrop.val();
+    console.log("sortByDrop: redirect to " + url);
+    window.location.href=url;
+  });
+
   var signOutBtn =$('#sign-out');
   signOutBtn.click(function(event) {
     event.preventDefault();

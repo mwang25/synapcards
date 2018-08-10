@@ -55,26 +55,14 @@
       <div class="row row-outer">
         <div class="col-xs-12">
           <p>
-            All tags in Synapcards are listed here:
-          </p>
-        </div>
-      </div>
-      <form action="/tagmap" method="get">
-        <div class="row row-outer">
-          <div class="col-xs-3">Sort By:</div>
-          <div class="col-xs-8">
+            All tags in Synapcards are listed here, sorted by
             <select id="sort-by-dropdown" name="sort_by">
               <option>name</option>
               <option>count</option>
             </select>
-          </div>
+          </p>
         </div>
-        <div class="row row-outer">
-          <div class="col-xs-12">
-            <input type="submit" value="Submit">
-          </div>
-        </div>
-      </form>
+      </div>
       <div class="row row-outer">
         <div class="col-xs-12">
           <p>{{ all_tags }}</p>
