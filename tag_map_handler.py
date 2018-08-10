@@ -1,6 +1,8 @@
 from operator import attrgetter
 import webapp2
 
+from jinja2 import Markup
+
 from card_stats import CardStats
 from constants import Constants
 from global_stats import GlobalStats
@@ -21,7 +23,8 @@ class TagMapHandler(webapp2.RequestHandler):
         else:
             tags.sort(key=attrgetter('name'))
 
-        values['all_tags'] = u'  '.join([unicode(t) for t in tags])
+        all_tags = u'  '.join([t.search_link() for t in tags])
+        values['all_tags'] = Markup(all_tags)
         template = JinjaWrapper.get_template('tag_map.html')
         self.response.write(template.render(values))
 

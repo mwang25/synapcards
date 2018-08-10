@@ -3,11 +3,16 @@ from operator import attrgetter
 from card_attr import CardAttr
 from card_node import CardNode
 from card_node import CardNodeError
+from constants import Constants
 
 
 class TagNode(CardNode):
     def __init__(self, name, count):
         super(TagNode, self).__init__(CardAttr.TAG, name, count)
+
+    def search_link(self):
+        return u'<a href="{}/search?tags={}&count=100">{}</a> ({})'.format(
+            Constants.HOMEPAGE, self.name, self.name, self.count)
 
 
 def run_tests():
