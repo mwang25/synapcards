@@ -74,8 +74,8 @@
         </div>
         <div class="row row-outer">
           <div class="col-xs-3">Author:</div>
-          <div class="col-xs-8">
-            <select id="author-dropdown" name="author">
+          <div class="col-xs-9">
+            <select class="max-width-drop" id="author-dropdown" name="author">
               {% for a in authors %}
                   <option>{{ a }}</option>
               {% endfor %}
@@ -84,8 +84,8 @@
         </div>
         <div class="row row-outer">
           <div class="col-xs-3">Source:</div>
-          <div class="col-xs-8">
-            <select id="source-dropdown" name="source">
+          <div class="col-xs-9">
+            <select class="max-width-drop" id="source-dropdown" name="source">
               {% for s in sources %}
                   <option>{{ s }}</option>
               {% endfor %}
@@ -94,7 +94,7 @@
         </div>
         <div class="row row-outer">
           <div class="col-xs-3">Tags:</div>
-          <div class="col-xs-8">
+          <div class="col-xs-9">
             <textarea class="textarea" name="tags" rows=1 id="tags-textarea"></textarea>
           </div>
         </div>

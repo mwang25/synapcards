@@ -18,6 +18,10 @@ textarea {
   width:100%;
 }
 
+.max-width-drop {
+  max-width:100%;
+}
+
 .menu-bar {
   background-color: #d0cece;
 }
