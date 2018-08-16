@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>SynapCards</title>
+  </head>
+  <body>
+    <pre><code>
+Here are your {{ count }} cards in JSON format:
+-----BEGIN_SNIP-----
+[{% for c in cards %}
+{
+  "card_id": "{{ c.card_id }}",
+  "title": "{{ c.title }}",
+  "title_url": "{{ c.title_url }}",
+  "summary": "{{ c.summary }}",
+  "authors": "{{ c.authors }}",
+  "source": "{{ c.source }}",
+  "published": "{{ c.published }}",
+  "tags": "{{ c.tags }}",
+  "rating": {{ c.rating }},
+  "detailed_notes": "{{ c.detailed_notes }}",
+  "card_created": "{{ c.card_created_loc }}",
+  "card_updated": "{{ c.card_updated_loc }}",
+  "liked_by": "{{ c.liked_by }}"
+},{% endfor %}
+{}
+]
+-----END_SNIP-----
+    </code></pre>
+  </body>
+</html>

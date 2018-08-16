@@ -38,6 +38,12 @@ class SearchManager():
         return values
 
     @classmethod
+    def search_for_dump(cls, args):
+        values = {}
+        values['cards'] = Card.search(args)
+        return values
+
+    @classmethod
     def _summarize(cls, card):
         line = u'({}/{}) {} [{}] {}'.format(
             card['rating'],

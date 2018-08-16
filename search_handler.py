@@ -12,14 +12,19 @@ class SearchHandler(webapp2.RequestHandler):
     def get(self):
         GlobalStats.incr_views()
         args = self._parse_args()
-        values = SearchManager.search(args)
-        values['users'] = [''] + sorted(User.get_all())
-        values['authors'] = [''] + sorted(CardStats.get_all_authors())
-        values['sources'] = [''] + sorted(CardStats.get_all_sources())
-        values['ratings'] = Constants.SEARCH_RATINGS
-        values['counts'] = Constants.SEARCH_COUNTS
-        values['homepage'] = Constants.HOMEPAGE
-        template = JinjaWrapper.get_template('search.html')
+        if args.get('text_dump', 'false') == 'true':
+            values = SearchManager.search_for_dump(args)
+            values['count'] = len(values['cards'])
+            template = JinjaWrapper.get_template('text_dump.html')
+        else:
+            values = SearchManager.search(args)
+            values['users'] = [''] + sorted(User.get_all())
+            values['authors'] = [''] + sorted(CardStats.get_all_authors())
+            values['sources'] = [''] + sorted(CardStats.get_all_sources())
+            values['ratings'] = Constants.SEARCH_RATINGS
+            values['counts'] = Constants.SEARCH_COUNTS
+            values['homepage'] = Constants.HOMEPAGE
+            template = JinjaWrapper.get_template('search.html')
         self.response.write(template.render(values))
 
     def _parse_args(self):
@@ -40,6 +45,7 @@ class SearchHandler(webapp2.RequestHandler):
             'source',
             'rating',
             'count',
+            'text_dump',
             'spec_op',
         ]
         for p in params:
