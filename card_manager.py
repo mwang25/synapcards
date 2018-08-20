@@ -36,11 +36,6 @@ class CardManager():
         [AuthorNode(t, 0) for a in CardNode.as_list(values['authors'])]
 
     @classmethod
-    def _get_user_tzname(cls, user_id):
-        user_dict = User.get(user_id)
-        return user_dict['timezone']
-
-    @classmethod
     def _localize_timestamp(cls, timestamp, user_tzname):
         pdt = PublishDatetime.parse_string(timestamp)
         pdt.set_timezone(user_tzname)
@@ -159,7 +154,7 @@ class CardManager():
         card_dict = Card.get(card_id)
 
         # insert another set of timestamps localized to user's timezone
-        user_tzname = cls._get_user_tzname(values['user_id'])
+        user_tzname = User.get_tzname(values['user_id'])
         card_dict['created_loc'] = cls._localize_timestamp(
             card_dict['created'], user_tzname)
         card_dict['updated_loc'] = cls._localize_timestamp(

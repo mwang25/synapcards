@@ -6,7 +6,7 @@
   </head>
   <body>
     <pre><code>
-Here are your {{ count }} cards in JSON format:
+Here are your {{ count }} cards in JSON format.  Save this page to backup your cards.
 -----BEGIN_SNIP-----
 [{% for c in cards %}
 {
@@ -20,8 +20,8 @@ Here are your {{ count }} cards in JSON format:
   "tags": "{{ c.tags }}",
   "rating": {{ c.rating }},
   "detailed_notes": "{{ c.detailed_notes }}",
-  "card_created": "{{ c.card_created_loc }}",
-  "card_updated": "{{ c.card_updated_loc }}",
+  "card_created": "{{ c.created_loc }}",
+  "card_updated": "{{ c.updated_loc }}",
   "liked_by": "{{ c.liked_by }}"
 },{% endfor %}
 {}

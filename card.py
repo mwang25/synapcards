@@ -190,7 +190,7 @@ class Card(ndb.Model):
         return {'featured_cards_id': None}
 
     @classmethod
-    def search(cls, args, keys_only=False):
+    def search(cls, args, keys_only=False, truncate=True, web=True):
         query = Card.query()
         if 'user_id' in args:
             query = query.filter(Card.owner == args['user_id'])
@@ -215,7 +215,8 @@ class Card(ndb.Model):
             return query.fetch(keys_only=True)
         else:
             count = int(args.get('count', Constants.SEARCH_DEFAULT_COUNT))
-            return [cls._fill_dict(c, True) for c in query.fetch(count)]
+            cards = query.fetch(count)
+            return [cls._fill_dict(c, truncate, web) for c in cards]
 
     @classmethod
     def _rating_filter(cls, query, f):
@@ -286,9 +287,12 @@ class Card(ndb.Model):
         return ' '.join(s2.split(' ')[0:truncate_point]), True
 
     @classmethod
-    def _format_detailed_notes(cls, s1, s2, card_id, truncate):
+    def _format_detailed_notes(cls, s1, s2, card_id, truncate, web):
         if not truncate:
-            return Markup(HTMLParser.HTMLParser().unescape(s2))
+            if web:
+                return Markup(HTMLParser.HTMLParser().unescape(s2))
+            else:
+                return s2
 
         (notes, trunc) = cls._truncate_string(
                 s1, cgi.escape(s2), Constants.MAX_CARD_WORDS)
@@ -305,7 +309,7 @@ class Card(ndb.Model):
             return title
 
     @classmethod
-    def _fill_dict(cls, card, truncate=False):
+    def _fill_dict(cls, card, truncate=False, web=True):
         if card.liked_by:
             liked_by = u', '.join(card.liked_by)
             num_likes = len(card.liked_by)
@@ -338,7 +342,8 @@ class Card(ndb.Model):
                     card.summary,
                     card.detailed_notes,
                     card.key.string_id(),
-                    truncate),
+                    truncate,
+                    web),
                 'liked_by': liked_by,
                 'num_likes': num_likes,
             }

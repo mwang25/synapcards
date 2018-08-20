@@ -104,6 +104,11 @@ class User(ndb.Model):
         return None if not result else cls._fill_dict(result)
 
     @classmethod
+    def get_tzname(cls, user_id):
+        user = cls._query_user_id(user_id)
+        return user.timezone
+
+    @classmethod
     def split_strip(cls, s):
         """Given elements in a comma separated string, return as a list"""
         if not s:

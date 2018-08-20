@@ -1,5 +1,7 @@
 from card import Card
 from constants import Constants
+from publish_datetime import PublishDatetime
+from user import User
 
 
 class SearchManagerError(RuntimeError):
@@ -39,9 +41,18 @@ class SearchManager():
 
     @classmethod
     def search_for_dump(cls, args):
-        values = {}
-        values['cards'] = Card.search(args)
-        return values
+        user_tzname = User.get_tzname(args['user_id'])
+        cards = Card.search(args, truncate=False, web=False)
+        for c in cards:
+            c['created_loc'] = cls._localize_timestamp(
+                c['created'], user_tzname)
+            c['updated_loc'] = cls._localize_timestamp(
+                c['updated'], user_tzname)
+            c['title'] = cls._format_for_dump(c['title'])
+            c['summary'] = cls._format_for_dump(c['summary'])
+            c['detailed_notes'] = cls._format_for_dump(c['detailed_notes'])
+
+        return {'cards': cards}
 
     @classmethod
     def _summarize(cls, card):
@@ -54,3 +65,19 @@ class SearchManager():
         return {
             'card_id': card['card_id'],
             'line': line}
+
+    @classmethod
+    def _localize_timestamp(cls, timestamp, user_tzname):
+        # TODO: unify this func with copy in card_manager
+        pdt = PublishDatetime.parse_string(timestamp)
+        pdt.set_timezone(user_tzname)
+        return str(pdt)
+
+    @classmethod
+    def _format_for_dump(cls, s):
+        # This is not the full list of characters that need to escaped, but
+        # the most likely ones are here.
+        s = s.replace('\\', '\\\\')
+        s = s.replace('\n', '\\n')
+        s = s.replace('\t', '\\t')
+        return s
