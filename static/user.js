@@ -369,6 +369,14 @@ $(function(){
     window.location.href=url;
   });
 
+  var backupCardsBtn = $('#backup-cards-button');
+  backupCardsBtn.click(function(event) {
+    event.preventDefault();
+    url = backendHostUrl + '/search?user_id=' + userData.signed_in_user_id + '&count=1000&text_dump=true';
+    console.log("backupCardsBtn: redirect to " + url);
+    window.location.href=url;
+  });
+
   var likesCountDrop = $('#likes-count-dropdown');
   likesCountDrop.change(function(event) {
     event.preventDefault();

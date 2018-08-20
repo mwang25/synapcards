@@ -98,10 +98,17 @@
           <h3>The following fields are visible to everyone:</h3>
           <p><b>User id:</b> <span>{{ user_id }}</span></p>
           <p><b>Profile:</b> <span>{{ profile }}</span></p>
-          <p>
-            <b>Total Cards:</b> {{ total_cards }}
-            <button id="add-new-card-button">Add New Card</button>
-          </p>
+          <div class="row row-outer">
+            <div class="col-xs-6">
+              <p>
+                <b>Total Cards:</b> {{ total_cards }}
+                <button id="add-new-card-button">Add New Card</button>
+              </p>
+            </div>
+            <div class="col-xs-6">
+              <button id="backup-cards-button">Backup Cards</button>
+            </div>
+          </div>
           <p>
             <b>Following ({{ following_count }}):</b>
             <span>
