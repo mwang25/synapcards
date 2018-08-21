@@ -10,6 +10,7 @@ from conf_datetime import ConfDatetime
 from constants import Constants
 from email_status import EmailStatus
 from global_stats import GlobalStats
+from like import Like
 from update_frequency import UpdateFrequency
 from user import User
 from user_id import UserId
@@ -80,6 +81,28 @@ class UserManager():
             self._decr_card_count(count)
             count = 0
 
+    def _cleanup_likes(self, user_id):
+        """Remove user from liked_by on cards and like table"""
+        loops = 0
+        while True:
+            likes = Like.latest_likes_by(user_id, count=1000)
+            if len(likes) == 0:
+                break
+
+            for k in likes:
+                card_id = k['card_id']
+                card_dict = Card.get(card_id)
+                liked_by = Card.liked_by_as_list(card_dict['liked_by'])
+                Card.update_likes(
+                    card_id, list(set(liked_by) - set([user_id])))
+                Like.unlike(user_id, card_id)
+
+            # Emergency check to break infinite loops
+            loops += 1
+            if loops > 500:
+                logging.error("infinite loop detected during user like delete")
+                return
+
     @ndb.transactional()
     def _cleanup_follows(self, user_id):
         """Remove this user from other users followers and following list"""
@@ -114,6 +137,7 @@ class UserManager():
     def delete(self, user_id):
         """Delete user.  Note this is not the same as changing user id."""
         self._delete_all_user_cards(user_id)
+        self._cleanup_likes(user_id)
         self._cleanup_follows(user_id)
         self._delete_user_and_update_counts(user_id)
         return {}
