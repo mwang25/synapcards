@@ -31,101 +31,75 @@
       <div class="row">
         <div class="col-xs-12">
           <h2>Design Notes</h2>
-          <h3>Sections</h3>
+          <h3>Release 1.0</h3>
           <p>
-            Pinned cards which are for the author for his own personal favorite
-            cards.  Is this needed?  Can it be done with a tag called "pinned"?
-            <br>
-            Optional featured cards (done 11/25/17)
-            <br>
-            Latest cards added (done 11/25/17)
+            As of the end of August 2018, I feel like I have implemented
+            enough features to have the 1.0 release of synapcards.com.
+            The remainder of this document describes useful features that I wanted
+            to implement but couldn't, and some features that I thought about but
+            ultimately rejected or set aside indefinately.
           </p>
-          <h3>Cards</h3>
+          <h3>Useful features not implemented (future work)</h3>
           <ol>
-            <li>
-              Top row of all cards should have card id on the left, and icons
-              in the middle, and a drop down menu on the right.  Card is is a
-              hyperlink to the card itself.
+            <li><b>Google auth redirection</b>: when logging in using Google auth,
+              the redirect message uses the synapcards firebase project name instead
+              of just synapcards or google.  Facebook auth redirect looks good.
             </li>
-            <li>
-              Heart icon for likes.  Mouse over like icon to see how many likes.
-              Should author of the card be allowed to like his own card?  And
-              should the icon look different if the author has liked it?
+            <li><b>tag completion</b>: as user is typing in the tag in new card
+              or search, autocomplete to help the user.
             </li>
-            <li>
-              Eye icon for number of views.  Too fine grained?
+            <li><b>tag normalization</b>:
+              Users entering slightly different tags for the same thing can make
+              it hard to find things, e.g. inspiration versus inspirational.
+              Need some kind of service to suggest to users to use whichever tag
+              is more commonly used.  And also maybe change the other ones (but
+              ask the user for permission to change.)  Maybe this will not be
+              needed if we have tag completion.
             </li>
-            <li>
-              If this card is not owned by the viewer, then a bell icon (or
-              telescope) for getting notified of updates to this card.  Too
-              fine grained?  Is following the user good enough?
+            <li><b>stats in graphs</b>: on the user's profile page or some standalone
+              page, display some stats in graph form, such as number of cards created
+              over time or distribution of tags. This is good practice for showing
+              data as graphs on a web page.
+            </li>
+            <li><b>improve search</b>: current search requires exact match.
+              Allow partial word match over any specified field, e.g. title,
+              author, summary, detailed notes.  Allow case insensitive matches.
+            </li>
+            <li><b>REST API</b>: think of some part of website functionality (search?)
+              to offload to a REST API (Google apigee), mainly just to learn
+              about using API gateways.
             </li>
           </ol>
-          <p>
-            Cards can be private, public, or shared, meaning view permissions
-            granted to specific users.  Should we ever allow other people to write to
-            someone else's card?  Seems hard to deal with.  They could just
-            create a shared account.
-          </p>
-          <h3>Card Drop down menu</h3>
+          <h3>Rejected or set-aside features</h3>
           <ol>
-            <li>
-              If this card is owned by the viewer, then sharing option.
-              Sharing allows the owner to make the card private, share with
-              other synapcard users, or make the card public.  Instead of putting
-              this in the drop down menu, configure it within the context of the
-              current add/delete/edit buttons and form?
+            <li><b>Card privacy levels</b>: currently all cards are public,
+              meaning everyone can see.  Could also have private (viewable only
+              by owner) or shared (viewable by a specific list of users).
+              Hard to implement.
             </li>
-            <li>
-              If this card is not owned by the viwer, then copy option.
-              Copy will create a new card owned by the current viewer.  Once
-              the copy is made, the copy is independent of the original and
-              can diverge from the original card.
+            <li><b>Clone a card</b>: when a user sees a good card from another
+              user, he can make a copy of it and start editing his copy.
+              Somehow the two cards can still have some relationship with each other.
+              Seems like an interesting idea, but no clear need for it now.
             </li>
-            <li>
-              Everyone will have a meta info option, which shows meta info about
-              the card, such as creation date, last update date, etc.
+            <li><b>Allow others to edit a card</b>: the owner of a card could
+              grant write access to another user.  No need for it now.
+            </li>
+            <li><b>Pinned cards</b>: using likes and get_all_tags seems to be good enough.
+              (e.g. tag a card with "pinned").  Don't see a use case where this
+              is really helpful.
+            </li>
+            <li><b>Eye icon to report how many views of a card</b>: Too fine
+              grained, and also not clear exactly when to count a card as
+              having been viewed.
+            </li>
+            <li><b>Follow on a per card basis</b>: too fine grained.  Follow
+              user.
+            </li>
+            <li><b>Drop down menu on top right corner of card</b>: used
+              buttons instead.
             </li>
           </ol>
-          <h3>Login</h3>
-          <p>
-            Support for users logging into their own accounts using
-            oath/google identification.  Login information is needed to
-            implement secure email updates, sharing, and support for multiple
-            users.  (done 11/25/17)
-          </p>
-          <p>
-            Each user can optionally create a profile page for him/herself.
-            Profile page can also show stats about the account, e.g. how many
-            cards the user has created, how
-            many added last month, distribution of tags,
-            total views(?), total likes(?),
-            when the user joined synapcards, etc.  Need at least one setting:
-            timezone the user lives in.  (Most of the information is there on
-            the user's profile/settings page.  Add more stuff, e.g. tags
-            distribution as time goes on.  11/25/17)
-          </p>
-          <h3>Privacy</h3>
-          <p>
-            Every card will have privacy control.  They can be
-            set to private, shared with specific synapcard users, or public.
-          </p>
-          <h3>Tag Normalization</h3>
-          <p>
-            Users entering slightly different tags for the same thing can make
-            it hard to find things, e.g. inspiration versus inspirational.
-            Need some kind of service to suggest to users to use whichever tag
-            is more commonly used.  And also maybe change the other ones (but
-            ask the user for permission to change.)
-          </p>
-          <h3>Search</h3>
-          <p>
-            Current search page works for exact matches.  A more flexible search
-            and search for partial matches, case insensitive matches, and matches
-            in multiple fields (e.g. title, summary, and description).  This can
-            be a separate standalone service, which will be interesting
-            technical work.
-          </p>
         </div>
       </div>
     </div>
