@@ -63,34 +63,24 @@
             <a href=static/about.html>about page</a> and the
             <a href=static/release-notes.html>release notes.</a>
           </p>
+          <h2>Announcements:</h2>
           <p>
-            This website is under development.  A limited number of people can
-            create their own account on Synapcards (by signing in) and add a
-            limited number of cards.  Currently, all cards are public, meaning
-            they are visible to everyone.
-            Eventually you will be able to control who can see your cards
-            (everyone/public, shared, or private/only you).
-          </p>
-          <p>
-            Next on the todo list: dump cards for backup.
+            [8/23/18] After more than a year of development, I am happy to announce
+            release 1.0 of synapcards.com!
           </p>
         </div>
       </div>
       <div class="row row-outer">
         <div class="col-xs-12">
-          <h2>Users</h2>
-          <b>Total Users:</b> {{ total_users }}<br>
-          <b>Users with the most cards:</b>
+          <h2>Users:</h2>
+          <p><b>Total Users:</b> {{ total_users }}</p>
+          <p><b>Users with the most cards:</b><p>
+          {% for u in top_users %}
+            <p><a href="{{ homepage }}/user/{{ u.user_id }}">{{ u.user_id }}</a>
+             <span> ({{ u.total_cards }})</span></p>
+          {% endfor %}
         </div>
       </div>
-      {% for u in top_users %}
-      <div class="row row-outer">
-        <div class="col-xs-12">
-          <p><a href="{{ homepage }}/user/{{ u.user_id }}">{{ u.user_id }}</a>
-           <span> ({{ u.total_cards }})</span></p>
-        </div>
-      </div>
-      {% endfor %}
       <div class="row row-outer">
         <div class="col-xs-12">
           <h2>Latest Top Rated Cards:</h2>
